@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌟 はじめに | Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* メインコンテナ */
+        .main-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 260px;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-category {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-category h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background: #e9ecef;
+            color: #0066cc;
+        }
+
+        .sidebar-nav a.active {
+            background: #0066cc;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        /* コンテンツスタイル */
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .main-content h2 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+        }
+
+        .main-content h3 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+        }
+
+        .main-content ul, .main-content ol {
+            margin: 0 0 20px 0;
+            padding-left: 30px;
+        }
+
+        .main-content li {
+            margin-bottom: 8px;
+        }
+
+        /* リンク */
+        .main-content a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .main-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* コード */
+        .main-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SF Mono", Monaco, "Inconsolata", "Fira Code", monospace;
+            font-size: 14px;
+        }
+
+        .main-content pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .main-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* 引用 */
+        .main-content blockquote {
+            border-left: 4px solid #e0e0e0;
+            padding-left: 16px;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        /* 強調 */
+        .main-content strong {
+            font-weight: 600;
+        }
+
+        /* 動画埋め込み */
+        .main-content div[style*="position: relative"] {
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* テーブル */
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .main-content th, .main-content td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .main-content th {
+            font-weight: 600;
+            background: #f8f8f8;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .main-content h1 {
+                font-size: 24px;
+            }
+
+            .main-content h2 {
+                font-size: 20px;
+            }
+
+            .main-content h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Harukazeガイドライン</h1>
+            <p>toB事業 品質管理マニュアル</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-category">
+    <h2>基本情報</h2>
+    <ul class="sidebar-nav">
+        <li><a href="introduction.html">はじめに</a></li>
+    </ul>
+</div>
+<div class="sidebar-category">
+    <h2>必須項目</h2>
+    <ul class="sidebar-nav">
+        <li><a href="director_mindset.html">ディレクターの心得</a></li>
+        <li><a href="business_process.html">全体の業務プロセス</a></li>
+        <li><a href="communication_guide.html">コミュニケーションガイド</a></li>
+        <li><a href="troubleshooting.html">代表的なトラブルシューティング</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="main-content">
+            <h1 id="_1">はじめに</h1>
+<h2 id="_2">動画で理解する（必須）</h2>
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/7990e66509a946b1a2859f4b54bf9dc0?sid=95a9d275-d84d-49da-99c6-412916601a73" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; margin-top: 20px;"><iframe src="https://www.loom.com/embed/b8fef1c8ec804443819ce2cb9c45617f?sid=319857f0-1b77-42b3-b4d1-303a4fc85f31" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<h2 id="_3">このガイドラインの目的</h2>
+<p>Harukazeガイドラインは、関わる全ての人の価値を最大化し、長期的な成長を実現するために作られました。</p>
+<h3 id="4">4つの主要目的</h3>
+<ol>
+<li><strong>品質の統一化</strong></li>
+<li>誰がやっても迷わず良いものができる仕組み</li>
+<li>クライアント満足度の向上</li>
+<li>
+<p>最低限押さえるべきポイントの標準化</p>
+</li>
+<li>
+<p><strong>ナレッジの共有とリスク管理</strong></p>
+</li>
+<li>成功事例・失敗事例の蓄積と共有</li>
+<li>同じミスを繰り返さない仕組み</li>
+<li>
+<p>チーム全体の知見を集約</p>
+</li>
+<li>
+<p><strong>信頼性の担保</strong></p>
+</li>
+<li>統一されたスタンスでの対応</li>
+<li>プロフェッショナルとしての行動指針</li>
+<li>
+<p>チーム全体のベクトルを揃える</p>
+</li>
+<li>
+<p><strong>ビジョンの体現</strong></p>
+</li>
+<li>「クリエイティブと社会をもっと近づける」の実現</li>
+<li>単なる作業ではなく、ビジョンに向けた推進</li>
+<li>Win-Winの構造を構築</li>
+</ol>
+<h2 id="harukaze">Harukazeの理念</h2>
+<p><strong>ビジョン</strong>：日本一影響力のあるクリエイティブチームになる</p>
+<p><strong>ミッション</strong>：ひとびとのクリエイティビティを呼び覚ます</p>
+<p><strong>コンセプト</strong>：クリエイティブと社会をもっと、ちかづける</p>
+<h3 id="5">5バリュー</h3>
+<ol>
+<li><strong>最速プロトタイプ。</strong></li>
+<li><strong>昨日と同じことはしない。</strong></li>
+<li><strong>個を活かし、チームで最大化する。</strong></li>
+<li><strong>期待値の120%を出す。</strong></li>
+<li><strong>「当たり前」を疑い、新しい風を吹き込む。</strong></li>
+</ol>
+<h2 id="_4">ガイドラインの活用方法</h2>
+<h3 id="_5">必須コンテンツの確認</h3>
+<ul>
+<li>このガイドラインを見終わったら、「確認必須」マークのあるコンテンツは必ず確認</li>
+<li>仕事の前提となる知識として理解しておく</li>
+</ul>
+<h3 id="_6">日常的な活用</h3>
+<ol>
+<li><strong>ブックマークに登録</strong> - すぐアクセスできるように</li>
+<li><strong>迷ったときは必ず確認</strong> - 誰かに聞く前にまずガイドラインを見る</li>
+<li><strong>プロジェクト開始時に再確認</strong> - 案件ごとに関連部分を見直す</li>
+<li><strong>改善提案を積極的に</strong> - より良くするアイデアがあれば共有</li>
+</ol>
+<h3 id="_7">対象別の活用ポイント</h3>
+<p><strong>デザイナーの方へ</strong>
+- Harukazeの基準でクライアントを満足させるデザインの判断基準
+- ステップアップのためのロードマップ</p>
+<p><strong>ディレクターの方へ</strong>
+- コミュニケーション、フィードバック、フロント対応の方法
+- 予算配分や提案の考え方
+- デザイナーとの連携方法</p>
+<p><strong>外部パートナーの方へ</strong>
+- Harukazeの考え方と進め方の理解
+- より円滑なコミュニケーションのために</p>
+        </main>
+    </div>
+
+    <script>
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

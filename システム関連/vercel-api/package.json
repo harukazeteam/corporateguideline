@@ -1,0 +1,23 @@
+{
+  "name": "harukaze-guideline-api",
+  "version": "1.0.0",
+  "description": "Harukaze Guideline AI Chat API",
+  "main": "index.js",
+  "scripts": {
+    "prepare-data": "node scripts/prepare-data.js",
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@vercel/node": "^3.0.0",
+    "gray-matter": "^4.0.3",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

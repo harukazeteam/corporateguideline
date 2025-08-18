@@ -1,0 +1,2204 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>請求支払いフェーズ | Harukazeガイドライン</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #0066cc;
+            --accent-hover: #0052a3;
+            --border: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --sidebar-bg: #f5f7f9;
+            --sidebar-hover: #e8ecf0;
+            --ai-bg: #f0f7ff;
+            --ai-border: #3498db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: calc(100vh - 60px); /* ヘッダーの高さ分を引く */
+            top: 60px; /* ヘッダーの下に配置 */
+            z-index: 100;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        /* AIチャットパネル */
+        .ai-panel {
+            width: 400px;
+            background: var(--ai-bg);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            left: 280px;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+
+        .ai-panel.active {
+            display: flex;
+        }
+
+        .ai-panel-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-panel-header h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .ai-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 20px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .ai-close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .ai-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-message-content {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .ai-message.user .ai-message-content {
+            background: #e3f2fd;
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .ai-send-btn {
+            padding: 10px 20px;
+            background: var(--ai-border);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            background: #2980b9;
+        }
+
+        /* サイドバーフッター */
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--sidebar-bg);
+            border-top: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* フッターリンクスタイル */
+        .footer-link {
+            display: block;
+            padding: 12px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s, background-color 0.2s;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+            background-color: var(--hover-bg);
+        }
+
+        .footer-divider {
+            width: calc(100% - 48px);
+            height: 1px;
+            background: var(--border);
+            margin: 0 24px;
+        }
+
+        .sidebar-header {
+            padding: 20px 24px;
+            display: none; /* PC版では非表示 */
+        }
+        
+        /* モバイル専用スタイル - デフォルトで非表示 */
+        .mobile-header,
+        .mobile-sidebar-header,
+        .mobile-sidebar-search {
+            display: none;
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0 95px 0; /* フッター分のパディングを調整 */
+        }
+
+        .category {
+            margin-bottom: 8px;
+        }
+
+        .category-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 16px;
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .category-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .category-title .toggle-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            /* デフォルト: 右向き三角形（閉じた状態） */
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--text-secondary);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        /* 開いた状態は下向き三角形にするため90度回転 */
+        .category:not(.collapsed) > .category-title > .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .category-title:hover .toggle-icon {
+            border-left-color: var(--text-primary);
+        }
+        
+        /* デフォルトでカテゴリは閉じた状態 */
+        .category {
+            /* 初期状態で閉じておく */
+        }
+        
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        /* 明示的に開いた状態のスタイル */
+        .category:not(.collapsed) .category-content {
+            max-height: 1000px;
+        }
+        
+        /* サブカテゴリ */
+        .subcategory {
+            margin-left: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .subcategory-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 6px 16px 6px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+        
+        .subcategory-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .subcategory-title .toggle-icon {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .subcategory.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .subcategory-content {
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .subcategory.collapsed .subcategory-content {
+            max-height: 0;
+        }
+        
+        .subcategory .nav-item {
+            font-size: 13px;
+            padding: 8px 24px 8px 32px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 8px 24px 8px 32px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--bg-primary);
+            border-left-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-item.special {
+            background: #ff6b6b;
+            color: white;
+            margin: 5px 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .nav-item.special:hover {
+            background: #ff5252;
+            border-left-color: transparent;
+            color: white;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 20px;
+        }
+        
+        /* 展開可能なナビゲーションアイテム */
+        .nav-item-expandable {
+            position: relative;
+        }
+        
+        .nav-item.with-toggle {
+            position: relative;
+            padding-right: 40px;
+        }
+        
+        .nav-item.with-toggle::after {
+            content: '';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--text-secondary);
+            transition: transform 0.2s ease;
+        }
+        
+        .nav-item-expandable.expanded .nav-item.with-toggle::after {
+            transform: translateY(-50%) rotate(90deg);
+        }
+        
+        .nav-item-children {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .nav-item-expandable.expanded .nav-item-children {
+            max-height: 500px;
+        }
+        
+        .nav-item.sub-item {
+            padding-left: 48px;
+            font-size: 13px;
+            position: relative;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.sub-item::before {
+            content: '•';
+            position: absolute;
+            left: 36px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.sub-item:hover {
+            color: var(--accent);
+        }
+        
+        /* サブカテゴリフォルダのスタイル（カテゴリと同じUIにインデント追加） */
+        .subcategory-folder {
+            margin-left: 16px; /* 左側にインデント */
+            margin-bottom: 8px;
+        }
+        
+        .subcategory-folder-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 16px;
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .subcategory-folder-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .subcategory-folder-title .toggle-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            /* デフォルト: 右向き三角形（閉じた状態） */
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--text-secondary);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        /* 開いた状態は下向き三角形にするため90度回転 */
+        .subcategory-folder:not(.collapsed) > .subcategory-folder-title > .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .subcategory-folder-title:hover .toggle-icon {
+            border-left-color: var(--text-primary);
+        }
+        
+        .subcategory-folder-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .subcategory-folder:not(.collapsed) .subcategory-folder-content {
+            max-height: 1000px;
+        }
+        
+        .subcategory-folder .nav-item {
+            padding-left: 40px;
+            font-size: 13px;
+        }
+        
+        .subcategory-folder .nav-item::before {
+            display: none; /* 点を削除 */
+        }
+
+        /* 固定ヘッダー */
+        .global-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .site-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .site-name:hover {
+            color: var(--accent);
+        }
+        
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            margin-top: 60px; /* ヘッダーの高さ分 */
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 60px);
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.with-ai {
+            margin-left: 680px;
+        }
+
+        /* ページタイトル */
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 24px 0;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 16px;
+        }
+        
+        /* 検索ボックス */
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 8px 36px 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        /* 検索結果ドロップダウン */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .search-results.active {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        
+        .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-result-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .search-result-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .search-result-highlight {
+            background: #ffeb3b;
+            color: #000;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .search-no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* コンテンツスタイル */
+        .content-body h1 {
+            color: var(--text-primary);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .content-body h2 {
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+            display: flex;
+            align-items: center;
+            scroll-margin-top: 80px; /* ヘッダー分のオフセット */
+        }
+
+        .content-body h2::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--accent);
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .content-body h3 {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 600;
+            margin: 32px 0 16px 0;
+            scroll-margin-top: 80px;
+        }
+
+        .content-body p {
+            margin-bottom: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .content-body ul, .content-body ol {
+            margin: 16px 0;
+            padding-left: 32px;
+        }
+
+        .content-body li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .content-body strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* 目次のリンク */
+        .content-body a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .content-body a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* コードブロック */
+        .content-body code {
+            background: var(--bg-tertiary);
+            color: var(--error);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+        }
+
+        .content-body pre {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            max-width: 100%;
+        }
+
+        .content-body pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* テーブル */
+        .content-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .content-body th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content-body td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .content-body tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-body tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* 引用 */
+        .content-body blockquote {
+            border-left: 4px solid var(--accent);
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* アラートボックス */
+        .alert {
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #0d47a1;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+
+        /* 動画埋め込み */
+        .video-embed {
+            margin: 24px 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .video-embed iframe {
+            width: 100%;
+            max-width: 720px;
+            height: 405px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loom動画の埋め込みスタイル */
+        .content-body div[style*="position: relative"] {
+            max-width: 800px;
+            margin: 24px auto;
+            background: #000; /* 黒い背景を追加して動画の境界を明確に */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loomのiframeコンテナーの高さを動的に調整 */
+        .loom-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 24px auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            /* aspect-ratioで正確な比率を設定 */
+            aspect-ratio: 16 / 9;
+        }
+        
+        .loom-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            /* iframeの黒い背景も設定 */
+            background: #000;
+        }
+        
+        /* Loomの標準的な比率に対応 */
+        .loom-container[data-aspect="16:10"] {
+            aspect-ratio: 16 / 10;
+        }
+        
+        .loom-container[data-aspect="4:3"] {
+            aspect-ratio: 4 / 3;
+        }
+        
+        .loom-container[data-aspect="1:1"] {
+            aspect-ratio: 1 / 1;
+        }
+
+        .loom-embed {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: inline-block;
+        }
+
+        .loom-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loom-link:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* 目次 */
+        .toc {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 4px;
+        }
+
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+        }
+
+        .toc a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* スクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* 更新リクエストミニマル版 */
+        .update-request-minimal {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .update-request-minimal p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .update-request-minimal a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .update-request-minimal a:hover {
+            color: var(--accent-hover);
+            border-bottom-style: solid;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 968px) {
+            .ai-panel {
+                width: 100%;
+                max-width: 100%;
+                left: 0;
+                z-index: 101;
+            }
+
+            .main-content.with-ai {
+                margin-left: 20%;
+            }
+
+            .sidebar-footer {
+                position: static;
+                padding: 10px 0;
+            }
+
+            .footer-link {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* PC用ヘッダーを非表示 */
+            .global-header {
+                display: none;
+            }
+            
+            /* モバイル固定ヘッダー */
+            body {
+                padding-top: 56px; /* ヘッダーの高さ分 */
+            }
+            
+            .mobile-header {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 56px;
+                background: var(--bg-primary);
+                border-bottom: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                padding: 0 16px;
+                z-index: 1000;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                padding: 0;
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: var(--text-primary);
+            }
+            
+            .mobile-header-title {
+                flex: 1;
+                margin-left: 12px;
+                font-size: 18px;
+                font-weight: 600;
+                color: var(--text-primary);
+            }
+            
+            /* サイドバー - フルスクリーン */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--sidebar-bg);
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+                z-index: 1001;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            /* サイドバー内の検索 */
+            .mobile-sidebar-search {
+                padding: 16px;
+                background: var(--bg-primary);
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .mobile-sidebar-search input {
+                width: 100%;
+                padding: 12px;
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                font-size: 16px;
+                background: var(--bg-secondary);
+            }
+            
+            /* サイドバーナビゲーション改善 */
+            .sidebar-nav {
+                padding-bottom: 100px; /* フッター分の余白 */
+            }
+            
+            .nav-item {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            .category-title {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                padding: 12px 16px;
+                font-size: 15px;
+                font-weight: 600;
+            }
+            
+            .category-title .toggle-icon {
+                margin-right: 12px;
+                border-width: 6px 0 6px 10px;
+            }
+            
+            /* モバイルサイドバーヘッダー */
+            .mobile-sidebar-header {
+                display: flex !important;
+                align-items: center;
+                min-height: 56px;
+                padding: 16px;
+                background: var(--bg-primary);
+                border-bottom: 1px solid var(--border);
+            }
+            
+            .sidebar-close-btn {
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: none;
+                border: none;
+                cursor: pointer;
+                color: var(--text-primary);
+                margin-right: 12px;
+            }
+            
+            /* デスクトップサイドバーヘッダーを非表示 */
+            .sidebar-header.desktop-only {
+                display: none;
+            }
+            
+            /* モバイル検索を表示 */
+            .mobile-sidebar-search {
+                display: block !important;
+            }
+            
+            /* サイドバーフッター */
+            .sidebar-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: var(--sidebar-bg);
+                border-top: 1px solid var(--border);
+                padding: 0;
+            }
+            
+            .footer-link {
+                min-height: 48px;
+                display: flex;
+                align-items: center;
+                padding: 12px 20px;
+                font-size: 16px;
+            }
+            
+            /* オーバーレイ */
+            .sidebar-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                display: none;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+            
+            /* メインコンテンツ */
+            .main-content {
+                margin-left: 0;
+                margin-top: 0;
+                padding-top: 0;
+            }
+            
+            .content-body {
+                padding: 16px;
+                padding-bottom: 40px;
+            }
+            
+            .content-body h1 {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+            
+            .page-title {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+            
+            .content-body h2 {
+                font-size: 22px;
+                margin: 32px 0 16px 0;
+            }
+            
+            .content-body h3 {
+                font-size: 18px;
+                margin: 24px 0 12px 0;
+            }
+            
+            .content-body p, .content-body li {
+                font-size: 16px;
+                line-height: 1.7;
+            }
+            
+            /* 横スクロール防止 */
+            .content-body {
+                overflow-x: hidden;
+                word-wrap: break-word;
+                word-break: break-word;
+            }
+            
+            /* コードブロックの横スクロール防止 */
+            .content-body pre {
+                overflow-x: auto;
+                max-width: 100%;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+            }
+            
+            .content-body code {
+                word-break: break-all;
+            }
+            
+            /* テーブルの横スクロール対応 */
+            .content-body table {
+                display: block;
+                overflow-x: auto;
+                max-width: 100%;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* 画像の最大幅制限 */
+            .content-body img {
+                max-width: 100%;
+                height: auto;
+            }
+            
+            /* 長いURLの折り返し */
+            .content-body a {
+                word-break: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            /* AIパネル - モバイルでは全画面 */
+            .ai-panel {
+                width: 100%;
+                max-width: 100%;
+                left: 0;
+                z-index: 1002; /* サイドバーより上に表示 */
+                height: 100%;
+                position: fixed;
+                top: 0;
+            }
+            
+            .ai-panel.active {
+                display: flex;
+            }
+            
+            /* ボタンやリンクのタッチターゲット最適化 */
+            button, a, .nav-item, .category-title {
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            /* 動画の最適化 */
+            .video-embed iframe {
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+            
+            .loom-container {
+                margin: 16px 0;
+            }
+        }
+
+        /* プリント対応 */
+        @media print {
+            .sidebar, .ai-panel, .sidebar-footer {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-header {
+                position: relative;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- PC用グローバルヘッダー -->
+    <div class="global-header" id="globalHeader">
+        <a href="index.html" class="site-name" id="homeButton">Harukazeガイドライン</a>
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="ガイドラインを検索..." id="searchBox">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+    
+    <!-- モバイル用ヘッダー -->
+    <div class="mobile-header" id="mobileHeader">
+        <button class="mobile-menu-toggle" id="mobileMenuToggle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                <path d="M3 12h18M3 6h18M3 18h18"></path>
+            </svg>
+        </button>
+        <div class="mobile-header-title">Harukazeガイドライン</div>
+    </div>
+    
+    <!-- サイドバーオーバーレイ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+<!-- モバイル用サイドバーヘッダー -->
+<div class="mobile-sidebar-header" style="display: none;">
+    <button class="sidebar-close-btn" id="sidebarCloseBtn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+    <span style="flex: 1; font-size: 18px; font-weight: 600;">メニュー</span>
+</div>
+<!-- モバイル用検索 -->
+<div class="mobile-sidebar-search" style="display: none;">
+    <input type="text" placeholder="ページを検索..." id="mobileSidebarSearch">
+</div>
+<!-- 通常のサイドバーヘッダー -->
+<div class="sidebar-header desktop-only">
+<a href="index.html" style="text-decoration: none; color: inherit;">
+<h1>Harukazeガイドライン</h1>
+</a>
+<p>法人事業 品質管理マニュアル</p>
+</div>
+<nav class="sidebar-nav">
+<a href="index.html" class="nav-item">ホーム</a>
+<div class="nav-divider"></div>
+<div class="category collapsed">
+<div class="category-title">基本情報</div>
+<div class="category-content">
+<div class="subcategory-folder collapsed">
+<div class="subcategory-folder-title">はじめに</div>
+<div class="subcategory-folder-content">
+<a href="guideline_why.html" class="nav-item">このガイドラインの目的</a>
+<a href="vision.html" class="nav-item">Harukazeが目指す世界</a>
+<a href="page_03_3.html" class="nav-item">Harukazeの理念</a>
+<a href="page_04_3.html" class="nav-item">Harukazeから提供できること</a>
+<a href="page_05_2.html" class="nav-item">このガイドラインの活用法</a>
+</div>
+</div>
+<div class="subcategory-folder collapsed">
+<div class="subcategory-folder-title">コミュニケーションガイド</div>
+<div class="subcategory-folder-content">
+<a href="communication_guide_1.html" class="nav-item">対クライアントコミュニケーションガイド</a>
+<a href="communication_guide_2.html" class="nav-item">対チームメンバーコミュニケーションガイド</a>
+</div>
+</div>
+<div class="subcategory-folder collapsed">
+<div class="subcategory-folder-title">ディレクターの心得</div>
+<div class="subcategory-folder-content">
+<a href="page_01_1.html" class="nav-item">全体像におけるディレクターの位置付け</a>
+<a href="page_02_1.html" class="nav-item">主要な当事者領域・責任範囲</a>
+<a href="page_03_1.html" class="nav-item">何を大事に行動して欲しいか</a>
+<a href="page_04_1.html" class="nav-item">Harukaze 5バリューの実践</a>
+</div>
+</div>
+<div class="subcategory-folder collapsed">
+<div class="subcategory-folder-title">代表的なトラブルシューティング</div>
+<div class="subcategory-folder-content">
+<a href="page_01_3.html" class="nav-item">納期が遅れそうな時</a>
+<a href="page_02_3.html" class="nav-item">品質問題：基本的なミスの連発</a>
+<a href="page_03_4.html" class="nav-item">要件が変わってしまった</a>
+<a href="page_04_4.html" class="nav-item">コミュニケーション問題</a>
+</div>
+</div>
+<div class="subcategory-folder collapsed">
+<div class="subcategory-folder-title">全体の業務プロセス</div>
+<div class="subcategory-folder-content">
+<a href="page_01_2.html" class="nav-item">前提問い合わせフェーズ</a>
+<a href="page_02_2.html" class="nav-item">ヒアリング、提案、見積もりフェーズ</a>
+<a href="page_03_2.html" class="nav-item">受注、契約フェーズ</a>
+<a href="page_04_2.html" class="nav-item">チーム結成フェーズ</a>
+<a href="page_05_1.html" class="nav-item">プロジェクト始動、制作フェーズ</a>
+<a href="page_06.html" class="nav-item">納品フェーズ</a>
+<a href="page_07.html" class="nav-item">請求支払いフェーズ</a>
+<a href="page_08.html" class="nav-item">振り返りフェーズ</a>
+</div>
+</div>
+</div>
+</div>
+<div class="category collapsed">
+<div class="category-title">商談マニュアル</div>
+<div class="category-content">
+<a href="page_10.html" class="nav-item">法人商談の全体像</a>
+<a href="page_11.html" class="nav-item">法人商談の心得</a>
+<a href="page_12.html" class="nav-item">信頼関係の構築テクニック</a>
+<a href="page_13.html" class="nav-item">ヒアリングマスター講座</a>
+<a href="page_14.html" class="nav-item">提案力を高める実践テクニック</a>
+<a href="page_15.html" class="nav-item">クロージング成功の秘訣</a>
+<a href="page_16.html" class="nav-item">商材別の攻略法</a>
+<a href="page_17.html" class="nav-item">難易度別の対処法</a>
+</div>
+</div>
+<div class="category collapsed">
+<div class="category-title">その他</div>
+<div class="category-content">
+<a href="ai-assistant.html" class="nav-item">AIチャット</a>
+<a href="faq.html" class="nav-item">よくある質問（FAQ）</a>
+<a href="feedback.html" class="nav-item">ガイドライン追加/改善</a>
+<a href="improvement_cases.html" class="nav-item">実践改善事例集</a>
+</div>
+</div>
+</nav>
+<div class="sidebar-footer">
+    <button class="footer-link" onclick="toggleAiPanel(); event.stopPropagation();">AIチャット</button>
+    <div class="footer-divider"></div>
+    <a href="feedback.html" class="footer-link">ガイドライン改善提案</a>
+</div>
+        </div>
+        
+        <!-- AIチャットパネル -->
+        <div class="ai-panel" id="aiPanel">
+            <div class="ai-panel-header">
+                <h3>AIチャット</h3>
+                <button class="ai-close-btn" onclick="toggleAiPanel(); event.stopPropagation();">×</button>
+            </div>
+            <div class="ai-messages" id="aiMessages">
+                <div class="ai-message">
+                    <div class="ai-message-content">
+                        こんにちは！ガイドラインについて何かお困りのことはありますか？お気軽にご質問ください。
+                    </div>
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <textarea class="ai-input" id="aiInput" placeholder="質問を入力..." rows="2"></textarea>
+                    <button class="ai-send-btn" onclick="sendAIMessage()">送信</button>
+                </div>
+            </div>
+        </div>
+        
+        <main class="main-content" id="mainContent">
+            <div class="content-body">
+                <h1 class="page-title">請求支払いフェーズ</h1>
+
+<h2 id="1">動画で理解する（1分）</h2>
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe allowfullscreen="" frameborder="0" mozallowfullscreen="" src="https://www.loom.com/share/78320b8cf07043eeb14f2583717e5120?sid=e3a3dd83-b2ce-49b8-8953-5956542b06ff" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" webkitallowfullscreen=""></iframe></div>
+<div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+<a href="06_納品フェーズ.html" style="color: #007cba; text-decoration: none;">← 前へ</a>
+<span>7/8</span>
+<a href="08_振り返りフェーズ.html" style="color: #007cba; text-decoration: none;">次へ →</a>
+</div>
+<h2 id="_2">内容</h2>
+<h3 id="_3">請求書発行プロセス</h3>
+<p><strong>納品完了後の流れ：</strong><br/>
+- 納品完了とクライアントからの完了確認<br/>
+- 請求書発行の準備開始<br/>
+- Harukazeの経理担当との連携<br/>
+- 請求書の作成と送付</p>
+<h3 id="_4">経理連携体制</h3>
+<p><strong>請求書発行の仕組み：</strong><br/>
+- 経理担当者がHarukazeに在籍<br/>
+- ディレクターと経理担当者の連携が必要<br/>
+- 適切な請求書フォーマットでの発行<br/>
+- クライアントへの送付実施</p>
+<h3 id="_5">入金確認の重要性</h3>
+<p><strong>入金確認フロー：</strong><br/>
+- 請求書送付後の入金確認が経理から実施される<br/>
+- 入金確認ができなかった場合はリマインドが必要<br/>
+- ディレクターによるフォローアップの実施</p>
+<h3 id="_6">組織運営上の重要性</h3>
+<p><strong>財務責任の重大性：</strong><br/>
+- 入金がないとHarukazeとしてメンバーへの支払いができない<br/>
+- 組織の継続性に直接影響する重要なフェーズ<br/>
+- 売掛金の回収は事業継続の生命線<br/>
+- ディレクターとしての責任ある対応が必須</p>
+<h3 id="_7">クライアントとの関係維持</h3>
+<p><strong>適切な対応：</strong><br/>
+- 丁寧かつ確実な請求処理<br/>
+- 支払い遅延時の適切なコミュニケーション<br/>
+- 長期的な関係を考慮した対応<br/>
+- プロフェッショナルとしての信頼関係の維持</p>
+<h3 id="_8">確実なフォロー</h3>
+<p><strong>必要な確認事項：</strong><br/>
+- 請求書が確実に送付されているか<br/>
+- クライアント側で受け取り確認ができているか<br/>
+- 支払い期日の管理<br/>
+- 必要に応じたリマインド実施</p>
+<hr/>
+<div style="text-align: center; margin-top: 40px;">
+<a href="08_振り返りフェーズ.html" style="background: #007cba; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">次の動画へ →</a>
+</div>
+                <!-- 更新リクエスト -->
+                <div class="update-request-minimal">
+                    <p>このページを改善する → <a href="feedback.html">ガイドライン追加/改善</a></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        // ページ読み込み時にスクロール位置を復元
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+            if (savedScrollPosition) {
+                const sidebar = document.querySelector('.sidebar-nav');
+                if (sidebar) {
+                    sidebar.scrollTop = parseInt(savedScrollPosition);
+                }
+            }
+        });
+
+        // ページ遷移前にスクロール位置を保存
+        window.addEventListener('beforeunload', function() {
+            const sidebar = document.querySelector('.sidebar-nav');
+            if (sidebar) {
+                sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+            }
+        });
+
+        // AIチャットパネルの表示/非表示
+        function toggleAiPanel() {
+            const aiPanel = document.getElementById('aiPanel');
+            const mainContent = document.getElementById('mainContent');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const isActive = aiPanel.classList.contains('active');
+            
+            if (isActive) {
+                aiPanel.classList.remove('active');
+                mainContent.classList.remove('with-ai');
+            } else {
+                // モバイルの場合、サイドバーを閉じてからAIパネルを開く
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    // 少し遅延させてからAIパネルを開く
+                    setTimeout(() => {
+                        aiPanel.classList.add('active');
+                    }, 300);
+                } else {
+                    aiPanel.classList.add('active');
+                    mainContent.classList.add('with-ai');
+                }
+            }
+        }
+
+        // AI回答データベース
+        const aiResponses = {
+            '納期': {
+                keywords: ['納期', '遅れ', 'スケジュール', '締切'],
+                response: `納期に関するお悩みですね。以下のポイントをご確認ください：
+
+**1. 早期の状況把握**
+- 遅延の可能性を感じたら、すぐに全体スケジュールを確認
+- デザイナーとの進捗確認を密に行う
+
+**2. クライアントへの連絡**
+- 遅延の可能性がある場合は、早めにクライアントに相談
+- 代替案を必ず提示（部分納品、優先順位の調整など）
+
+**3. 対策の実施**
+- 追加リソースの検討
+- スコープの調整提案
+- バッファを含めたリスケジュール
+
+詳細は「トラブルシューティング」のページもご参照ください。`
+            },
+            'デザイナー': {
+                keywords: ['デザイナー', '連携', 'コミュニケーション', 'フィードバック'],
+                response: `デザイナーとの効果的な連携について説明します：
+
+**1. 明確な指示**
+- 要件を具体的に文書化
+- 参考イメージや事例を共有
+- 優先順位を明確に伝える
+
+**2. 定期的なコミュニケーション**
+- 進捗確認のタイミングを事前に決める
+- 質問しやすい環境づくり
+- 感謝の気持ちを忘れずに
+
+**3. フィードバックの方法**
+- 良い点を先に伝える
+- 改善点は具体的に
+- 一緒に解決策を考える姿勢
+
+「コミュニケーションガイド」のページに詳しい情報があります。`
+            },
+            '品質': {
+                keywords: ['品質', 'チェック', 'クオリティ', '確認'],
+                response: `品質チェックの重要ポイントをご紹介します：
+
+**1. チェックリストの活用**
+✅ ブランドガイドラインとの整合性
+✅ 誤字脱字の確認
+✅ 画像の解像度とフォーマット
+✅ リンクの動作確認
+✅ レスポンシブ対応（Webの場合）
+
+**2. 段階的なレビュー**
+- ラフ段階での方向性確認
+- 中間チェックでの詳細確認
+- 最終チェックでの総合確認
+
+**3. クライアント視点**
+- ターゲットユーザーの立場で確認
+- 競合他社との差別化ポイント
+- ビジネス目標との整合性
+
+詳しくは「品質管理」のセクションをご覧ください。`
+            }
+        };
+
+        function findBestResponse(input) {
+            const lowerInput = input.toLowerCase();
+            
+            for (const [key, data] of Object.entries(aiResponses)) {
+                for (const keyword of data.keywords) {
+                    if (lowerInput.includes(keyword)) {
+                        return data.response;
+                    }
+                }
+            }
+            
+            return `ご質問ありがとうございます。「${input}」について、ガイドラインを確認しています。
+
+現在、この質問に対する具体的な回答を準備中です。より具体的な状況をお教えいただけますでしょうか？
+
+また、ガイドライン内の検索機能もぜひご活用ください。`;
+        }
+
+        // AIメッセージ送信
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // ユーザーメッセージを追加
+            addAIMessage(message, 'user');
+            
+            // 入力欄をクリア
+            input.value = '';
+            
+            // ローディング表示
+            addAIMessage('考えています...', 'ai', 'loading');
+            
+            try {
+                // Vercel APIエンドポイント
+                const apiUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3000/api/chat' 
+                    : 'https://guideline-ai-chat.vercel.app/api/chat-gemini';
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // ローディングメッセージを削除
+                const messagesDiv = document.getElementById('aiMessages');
+                const loadingMsg = messagesDiv.querySelector('.ai-message.ai:last-child');
+                if (loadingMsg && loadingMsg.textContent.includes('考えています...')) {
+                    loadingMsg.remove();
+                }
+                
+                // AI応答を追加
+                let responseText = data.response;
+                
+                // 関連ページがある場合は追加
+                if (data.relatedPages && data.relatedPages.length > 0) {
+                    responseText += '\n\n**関連ページ:**\n';
+                    data.relatedPages.forEach(page => {
+                        responseText += `- [${page.title}](${page.url}) (${page.category})\n`;
+                    });
+                }
+                
+                addAIMessage(responseText, 'ai');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // ローディングメッセージを削除
+                const messagesDiv = document.getElementById('aiMessages');
+                const loadingMsg = messagesDiv.querySelector('.ai-message.ai:last-child');
+                if (loadingMsg && loadingMsg.textContent.includes('考えています...')) {
+                    loadingMsg.remove();
+                }
+                
+                // フォールバック: 従来のローカル応答を使用
+                const response = findBestResponse(message);
+                addAIMessage(response + '\n\n*（注: 現在オフラインモードで動作しています）*', 'ai');
+            }
+        }
+
+        function addAIMessage(text, sender, className = '') {
+            const messagesDiv = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender} ${className}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'ai-message-content';
+            
+            // Markdownリンクを実際のリンクに変換
+            let html = text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            contentDiv.innerHTML = html;
+            
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.appendChild(messageDiv);
+            
+            // スクロールを最下部に
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Enterキーで送信
+        document.getElementById('aiInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendAIMessage();
+            }
+        });
+
+        // トグル機能の実装
+        function initializeToggleCategories() {
+            // カテゴリの初期化
+            document.querySelectorAll('.category').forEach(category => {
+                const title = category.querySelector('.category-title');
+                if (title) {
+                    const categoryName = title.textContent.trim();
+                    // LocalStorageは無視して、常に閉じた状態から開始
+                    // const savedState = localStorage.getItem(`category-${categoryName}`);
+                    
+                    // 常に閉じた状態に初期化
+                    category.classList.add('collapsed');
+                    
+                    // トグルアイコン追加
+                    if (!title.querySelector('.toggle-icon')) {
+                        const icon = document.createElement('div');
+                        icon.className = 'toggle-icon';
+                        title.insertBefore(icon, title.firstChild);
+                    }
+                    
+                    // クリックイベント
+                    title.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        category.classList.toggle('collapsed');
+                        const isCollapsed = category.classList.contains('collapsed');
+                        localStorage.setItem(`category-${categoryName}`, isCollapsed);
+                    });
+                }
+            });
+            
+            // サブカテゴリフォルダの初期化
+            document.querySelectorAll('.subcategory-folder').forEach(folder => {
+                const title = folder.querySelector('.subcategory-folder-title');
+                if (title) {
+                    const folderName = title.textContent.trim();
+                    // LocalStorageは無視して、常に閉じた状態から開始
+                    // const savedState = localStorage.getItem(`subcategory-${folderName}`);
+                    
+                    // 常に閉じた状態に初期化
+                    folder.classList.add('collapsed');
+                    
+                    // トグルアイコン追加
+                    if (!title.querySelector('.toggle-icon')) {
+                        const icon = document.createElement('div');
+                        icon.className = 'toggle-icon';
+                        title.insertBefore(icon, title.firstChild);
+                    }
+                    
+                    // クリックイベント
+                    title.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        folder.classList.toggle('collapsed');
+                        const isCollapsed = folder.classList.contains('collapsed');
+                        localStorage.setItem(`subcategory-${folderName}`, isCollapsed);
+                    });
+                }
+            });
+        }
+        
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            // 先にトグル機能を初期化（デフォルト状態を設定）
+            initializeToggleCategories();
+            
+            // ホームボタンクリック時に全カテゴリを閉じる
+            const homeButton = document.getElementById('homeButton');
+            if (homeButton) {
+                homeButton.addEventListener('click', function(e) {
+                    // index.htmlへの遷移は通常通り行われる
+                    // ただし、次回ページロード時には全て閉じた状態になる
+                    // LocalStorageをクリアしてもいいが、今回の実装では不要
+                    
+                    // 即座に全カテゴリを閉じる（視覚的フィードバック）
+                    document.querySelectorAll('.category').forEach(category => {
+                        category.classList.add('collapsed');
+                    });
+                    document.querySelectorAll('.subcategory-folder').forEach(folder => {
+                        folder.classList.add('collapsed');
+                    });
+                });
+            }
+            
+            const currentPage = window.location.pathname.split('/').pop();
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                if (item.getAttribute('href') === currentPage) {
+                    item.classList.add('active');
+                    
+                    // アクティブなアイテムが含まれるカテゴリとサブカテゴリを展開
+                    let parent = item.parentElement;
+                    while (parent) {
+                        if (parent.classList.contains('category')) {
+                            parent.classList.remove('collapsed');
+                            // アクティブなカテゴリの状態を保存
+                            const title = parent.querySelector('.category-title');
+                            if (title) {
+                                const name = title.textContent.trim();
+                                localStorage.setItem(`category-${name}`, 'false');
+                            }
+                        } else if (parent.classList.contains('subcategory-folder')) {
+                            // サブカテゴリフォルダを展開
+                            parent.classList.remove('collapsed');
+                            const title = parent.querySelector('.subcategory-folder-title');
+                            if (title) {
+                                const name = title.textContent.trim();
+                                localStorage.setItem(`subcategory-${name}`, 'false');
+                            }
+                        }
+                        parent = parent.parentElement;
+                        if (parent && parent.classList.contains('sidebar-nav')) {
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // スムーススクロール for アンカーリンク
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // YouTube動画の自動リサイズ
+            function resizeVideos() {
+                const videoEmbeds = document.querySelectorAll('.video-embed iframe');
+                videoEmbeds.forEach(iframe => {
+                    const container = iframe.parentElement;
+                    const containerWidth = container.offsetWidth - 40;
+                    if (containerWidth < 720) {
+                        iframe.style.width = containerWidth + 'px';
+                        iframe.style.height = (containerWidth * 9/16) + 'px';
+                    }
+                });
+            }
+
+            resizeVideos();
+            window.addEventListener('resize', resizeVideos);
+            
+            // Loom動画のアスペクト比を最適化
+            function optimizeLoomVideos() {
+                // Loomの埋め込みコンテナを全て取得
+                const loomContainers = document.querySelectorAll('div[style*="position: relative"][style*="padding-bottom"]');
+                
+                loomContainers.forEach(container => {
+                    const iframe = container.querySelector('iframe[src*="loom.com"]');
+                    if (iframe) {
+                        // コンテナにクラスを追加してスタイリングを改善
+                        container.classList.add('loom-container');
+                        
+                        // インラインスタイルを削除してCSSクラスで制御
+                        container.style.position = '';
+                        container.style.paddingBottom = '';
+                        container.style.height = '';
+                        
+                        // iframeのスタイルも調整
+                        iframe.style.position = '';
+                        iframe.style.top = '';
+                        iframe.style.left = '';
+                        iframe.style.width = '';
+                        iframe.style.height = '';
+                        
+                        // Loomの実際のアスペクト比に応じて調整（多くの場合16:10や4:3）
+                        // デフォルトは16:9だが、実際の動画に応じて自動調整される
+                        container.style.aspectRatio = '16 / 9';
+                    }
+                });
+            }
+            
+            // ページ読み込み時とDOM変更時に実行
+            optimizeLoomVideos();
+            
+            // 動的にコンテンツが追加される場合に対応
+            const observer = new MutationObserver(optimizeLoomVideos);
+            observer.observe(document.body, { childList: true, subtree: true });
+            
+            // モバイルメニューの制御
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const mobileHeader = document.getElementById('mobileHeader');
+            const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
+            
+            // モバイルヘッダーの表示制御
+            function updateMobileHeader() {
+                if (window.innerWidth <= 768) {
+                    mobileHeader.style.display = 'flex';
+                } else {
+                    mobileHeader.style.display = 'none';
+                }
+            }
+            
+            updateMobileHeader();
+            window.addEventListener('resize', updateMobileHeader);
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    sidebar.classList.add('active');
+                    sidebarOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden'; // スクロール防止
+                });
+                
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                    document.body.style.overflow = ''; // スクロール再開
+                });
+                
+                // サイドバー閉じるボタン
+                if (sidebarCloseBtn) {
+                    sidebarCloseBtn.addEventListener('click', () => {
+                        sidebar.classList.remove('active');
+                        sidebarOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                    });
+                }
+                
+                // サイドバー内のリンクをクリックしたらメニューを閉じる
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('active');
+                            sidebarOverlay.classList.remove('active');
+                            document.body.style.overflow = '';
+                        }
+                    });
+                });
+                
+                // モバイルサイドバー内検索
+                const mobileSidebarSearch = document.getElementById('mobileSidebarSearch');
+                if (mobileSidebarSearch) {
+                    mobileSidebarSearch.addEventListener('input', (e) => {
+                        const searchTerm = e.target.value.toLowerCase();
+                        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
+                        
+                        navItems.forEach(item => {
+                            const text = item.textContent.toLowerCase();
+                            if (text.includes(searchTerm)) {
+                                item.style.display = '';
+                                // 親カテゴリも展開
+                                let parent = item.parentElement;
+                                while (parent && parent.classList.contains('category-content')) {
+                                    parent.parentElement.classList.remove('collapsed');
+                                    parent = parent.parentElement.parentElement;
+                                }
+                            } else {
+                                item.style.display = 'none';
+                            }
+                        });
+                        
+                        // カテゴリの表示/非表示
+                        document.querySelectorAll('.category').forEach(category => {
+                            const visibleItems = category.querySelectorAll('.nav-item:not([style*="display: none"])');
+                            if (visibleItems.length === 0 && searchTerm !== '') {
+                                category.style.display = 'none';
+                            } else {
+                                category.style.display = '';
+                            }
+                        });
+                    });
+                }
+            }
+            
+            // 検索機能の実装
+            const searchBox = document.getElementById('searchBox');
+            const searchResults = document.getElementById('searchResults');
+            let searchIndex = [];
+            
+            // 検索インデックスを読み込む
+            fetch('search-index.json')
+                .then(response => response.json())
+                .then(data => {
+                    searchIndex = data;
+                })
+                .catch(error => {
+                    console.error('検索インデックスの読み込みに失敗しました:', error);
+                });
+            
+            // 検索実行
+            function performSearch(query) {
+                if (!query || query.length < 2 || searchIndex.length === 0) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                const results = [];
+                const lowerQuery = query.toLowerCase();
+                
+                // 検索インデックスから検索
+                searchIndex.forEach(item => {
+                    const pageTitleMatch = item.pageTitle.toLowerCase().includes(lowerQuery);
+                    const sectionTitleMatch = item.sectionTitle.toLowerCase().includes(lowerQuery);
+                    const contentMatch = item.content.toLowerCase().includes(lowerQuery);
+                    
+                    if (pageTitleMatch || sectionTitleMatch || contentMatch) {
+                        // コンテンツから該当部分を抽出
+                        let excerpt = '';
+                        if (contentMatch) {
+                            const index = item.content.toLowerCase().indexOf(lowerQuery);
+                            const start = Math.max(0, index - 50);
+                            const end = Math.min(item.content.length, index + query.length + 50);
+                            excerpt = '...' + item.content.substring(start, end) + '...';
+                        } else {
+                            excerpt = item.content.substring(0, 150) + '...';
+                        }
+                        
+                        // ハイライト処理
+                        const regex = new RegExp(query, 'gi');
+                        excerpt = excerpt.replace(regex, match => `<span class="search-result-highlight">${match}</span>`);
+                        
+                        // タイトルの構築
+                        let displayTitle = item.pageTitle;
+                        if (item.sectionTitle !== item.pageTitle) {
+                            displayTitle = `${item.pageTitle} > ${item.sectionTitle}`;
+                        }
+                        
+                        results.push({
+                            title: displayTitle,
+                            excerpt: excerpt,
+                            url: item.url,
+                            sectionId: item.sectionId,
+                            category: item.category
+                        });
+                    }
+                });
+                
+                // 重複を除去（同じURLとセクションIDの組み合わせ）
+                const uniqueResults = results.filter((result, index, self) =>
+                    index === self.findIndex((r) => r.url === result.url && r.sectionId === result.sectionId)
+                );
+                
+                displaySearchResults(uniqueResults);
+            }
+            
+            // 検索結果の表示
+            function displaySearchResults(results) {
+                searchResults.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="search-no-results">検索結果が見つかりませんでした</div>';
+                } else {
+                    results.forEach(result => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `
+                            <div class="search-result-title">${result.title}</div>
+                            ${result.excerpt ? `<div class="search-result-content">${result.excerpt}</div>` : ''}
+                        `;
+                        item.addEventListener('click', () => {
+                            // セクションIDがある場合はアンカーリンクを付加
+                            let targetUrl = result.url;
+                            if (result.sectionId && result.sectionId !== result.url.replace('.html', '')) {
+                                targetUrl = result.url + '#' + result.sectionId;
+                            }
+                            window.location.href = targetUrl;
+                        });
+                        searchResults.appendChild(item);
+                    });
+                }
+                
+                searchResults.classList.add('active');
+            }
+            
+            // 検索イベントの設定
+            let searchTimeout;
+            searchBox.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(e.target.value);
+                }, 300);
+            });
+            
+            // 検索ボックス外をクリックしたら結果を非表示
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    searchResults.classList.remove('active');
+                }
+            });
+            
+            // ESCキーで検索結果を閉じる
+            searchBox.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchResults.classList.remove('active');
+                    searchBox.blur();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

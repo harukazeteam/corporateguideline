@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{TITLE}} | Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 300px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 1.5rem;
+            overflow-y: auto;
+            position: fixed;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        .nav {
+            list-style: none;
+        }
+
+        .nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            display: block;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            transform: translateX(5px);
+        }
+
+        .folder-item {
+            margin: 1rem 0;
+        }
+
+        .folder-title {
+            font-weight: 600;
+            color: #fff;
+            display: block;
+            padding: 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .sub-nav {
+            list-style: none;
+            margin-left: 1rem;
+            border-left: 2px solid rgba(255,255,255,0.2);
+            padding-left: 1rem;
+        }
+
+        .level-1 {
+            margin-left: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 2rem 3rem;
+            background: #fff;
+            min-height: 100vh;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: #fff;
+            padding: 1.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 本文スタイル */
+        .content h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin: 2rem 0 1rem 0;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .content h2 {
+            color: #34495e;
+            font-size: 1.5rem;
+            margin: 1.5rem 0 1rem 0;
+            border-left: 4px solid #667eea;
+            padding-left: 1rem;
+        }
+
+        .content h3 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .content p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .content ul, .content ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+        }
+
+        .content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .content code {
+            background: #f8f9fa;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            color: #e83e8c;
+        }
+
+        .content pre {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            line-height: 1.4;
+        }
+
+        .content pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .content blockquote {
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            font-style: italic;
+        }
+
+        .content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .content th, .content td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .content th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .content tr:hover {
+            background: #f8f9fa;
+        }
+
+        /* バッジスタイル */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 20px;
+            margin: 0.2rem;
+        }
+
+        .badge-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        /* アラートボックス */
+        .alert {
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #0d47a1;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+
+        .alert-success {
+            background: #e8f5e8;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .container {
+                flex-direction: column;
+            }
+        }
+
+        /* フッター */
+        .footer {
+            margin-top: 3rem;
+            padding: 2rem 0;
+            border-top: 1px solid #e9ecef;
+            text-align: center;
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+
+        /* スクロールバー */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {{SIDEBAR}}
+        
+        <main class="main-content">
+            <div class="header">
+                <h1>{{TITLE}}</h1>
+                <p style="color: #6c757d; font-size: 1.1rem;">Harukazeチーム ガイドライン</p>
+            </div>
+            
+            <div class="content">
+                {{CONTENT}}
+            </div>
+            
+            <div class="footer">
+                <p>© 2025 Harukaze Team. このガイドラインは継続的に更新されます。</p>
+                <p>最終更新: <script>document.write(new Date().toLocaleDateString('ja-JP'));</script></p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // アクティブなリンクをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath.split('/').pop()) {
+                    link.style.background = 'rgba(255,255,255,0.3)';
+                    link.style.color = '#fff';
+                }
+            });
+        });
+
+        // スムーススクロール
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>

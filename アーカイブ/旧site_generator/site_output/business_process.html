@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔄 全体の業務プロセス | Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* メインコンテナ */
+        .main-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 260px;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-category {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-category h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background: #e9ecef;
+            color: #0066cc;
+        }
+
+        .sidebar-nav a.active {
+            background: #0066cc;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        /* コンテンツスタイル */
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .main-content h2 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+        }
+
+        .main-content h3 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+        }
+
+        .main-content ul, .main-content ol {
+            margin: 0 0 20px 0;
+            padding-left: 30px;
+        }
+
+        .main-content li {
+            margin-bottom: 8px;
+        }
+
+        /* リンク */
+        .main-content a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .main-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* コード */
+        .main-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SF Mono", Monaco, "Inconsolata", "Fira Code", monospace;
+            font-size: 14px;
+        }
+
+        .main-content pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .main-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* 引用 */
+        .main-content blockquote {
+            border-left: 4px solid #e0e0e0;
+            padding-left: 16px;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        /* 強調 */
+        .main-content strong {
+            font-weight: 600;
+        }
+
+        /* 動画埋め込み */
+        .main-content div[style*="position: relative"] {
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* テーブル */
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .main-content th, .main-content td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .main-content th {
+            font-weight: 600;
+            background: #f8f8f8;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .main-content h1 {
+                font-size: 24px;
+            }
+
+            .main-content h2 {
+                font-size: 20px;
+            }
+
+            .main-content h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Harukazeガイドライン</h1>
+            <p>toB事業 品質管理マニュアル</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-category">
+    <h2>基本情報</h2>
+    <ul class="sidebar-nav">
+        <li><a href="introduction.html">はじめに</a></li>
+    </ul>
+</div>
+<div class="sidebar-category">
+    <h2>必須項目</h2>
+    <ul class="sidebar-nav">
+        <li><a href="director_mindset.html">ディレクターの心得</a></li>
+        <li><a href="business_process.html">全体の業務プロセス</a></li>
+        <li><a href="communication_guide.html">コミュニケーションガイド</a></li>
+        <li><a href="troubleshooting.html">代表的なトラブルシューティング</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="main-content">
+            <h1 id="_1">全体の業務プロセス</h1>
+<h2 id="_2">動画で理解する（必須）</h2>
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/3b8eb36dcb16476a84b31f02d7dddbd2?sid=fb584477-afb6-4ba0-b702-08071b07401c" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; margin-top: 20px;"><iframe src="https://www.loom.com/embed/2a0bcb3e7bea4d3fafc5735521fcc618?sid=ac9b8adf-5319-4c64-9105-15ead7a70688" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<h2 id="_3">前提</h2>
+<ul>
+<li>全体の業務フローの大まかな流れをお伝えします</li>
+<li>具体的な資料やマニュアルは参照資料をご覧ください</li>
+</ul>
+<h2 id="31">3.1 案件獲得フェーズ</h2>
+<h3 id="_4">クライアントからの問い合わせ対応</h3>
+<ul>
+<li>問い合わせ確認（LINE、メール、電話など）</li>
+<li>メッセージテンプレートを活用した返信</li>
+<li>初回ヒアリングの日程調整</li>
+<li>デザイナーアサインの検討</li>
+</ul>
+<h2 id="32">3.2 ヒアリング、提案、見積もりフェーズ</h2>
+<h3 id="_5">要件ヒアリング</h3>
+<ul>
+<li>ヒアリングシートの準備（資料参照）</li>
+<li>ニーズの深掘り・課題の明確化</li>
+<li>予算感・納期の確認</li>
+<li>議事録の作成と共有</li>
+</ul>
+<h3 id="_6">提案書作成（案件による）</h3>
+<ul>
+<li>ヒアリング内容を元にした提案構成</li>
+<li>価値提案と差別化ポイントの明確化</li>
+<li>競合分析・市場調査の反映</li>
+<li>コンセプトの立案と可視化</li>
+</ul>
+<h3 id="_7">見積もり作成・提出</h3>
+<ul>
+<li>作業項目、工数、金額の算出</li>
+<li>見積書テンプレートの活用</li>
+<li>クライアントへの提出と質疑応答対応</li>
+</ul>
+<h2 id="33">3.3 受注、契約フェーズ</h2>
+<h3 id="_8">契約締結</h3>
+<ul>
+<li>見積もり内容の合意確認</li>
+<li>契約書の作成（電子契約も可）</li>
+<li>署名・捺印の依頼と管理</li>
+<li>契約書の保管</li>
+</ul>
+<h2 id="34">3.4 チーム結成フェーズ</h2>
+<h3 id="_9">体制構築とリソースアサイン</h3>
+<ul>
+<li>必要なスキルセットを持つデザイナーの選定</li>
+<li>タスクの洗い出しと担当者割り当て</li>
+<li>役割分担と責任範囲の明確化</li>
+</ul>
+<h3 id="_10">プロジェクトグループ作成</h3>
+<ul>
+<li>LINEグループの開設（クライアント用/チーム用）</li>
+<li>Googleドライブの専用フォルダ作成</li>
+<li>関係者の招待とメッセージ送信</li>
+</ul>
+<h3 id="_11">キックオフミーティング</h3>
+<ul>
+<li>日程調整とZoomリンクの発行</li>
+<li>アジェンダの準備</li>
+<li>プロジェクトゴールの再確認</li>
+<li>議事録の作成と共有</li>
+</ul>
+<h2 id="35">3.5 プロジェクト始動、制作フェーズ</h2>
+<h3 id="_12">デザイナーへのフィードバック伝達</h3>
+<ul>
+<li>コンセプト・要件定義の共有</li>
+<li>制作フロー6stepの確認</li>
+<li>詳細スケジュールの作成（ガントチャート）</li>
+</ul>
+<h3 id="_13">デザイン制作の管理</h3>
+<ul>
+<li>テキストメッセージ、定例ミーティングでの進捗確認</li>
+<li>デザインの方向性・クオリティチェック・FB</li>
+<li>課題・遅延への対策</li>
+</ul>
+<h3 id="_14">クライアントへの中間提案</h3>
+<ul>
+<li>ラフ案の共有（レイアウト方向性、記載情報の確認）</li>
+<li>初校デザインの提案（デザイン方向性、全体イメージ）</li>
+<li>フィードバックの正確な受け取りと記録</li>
+<li>デザイン制作計画の立案</li>
+</ul>
+<h2 id="36">3.6 納品フェーズ</h2>
+<h3 id="_15">最終チェック</h3>
+<ul>
+<li>納品時チェックシートに基づく確認</li>
+<li>デザイナーのセルフチェック依頼</li>
+<li>必要箇所の修正指示</li>
+<li>クライアントへの最終確認依頼</li>
+</ul>
+<h3 id="_16">納品データ作成・提出</h3>
+<ul>
+<li>納品データの確認と準備</li>
+<li>Googleドライブでの共有</li>
+<li>納品データの取り扱い説明</li>
+</ul>
+<h2 id="37">3.7 請求、支払いフェーズ</h2>
+<h3 id="_17">請求書発行</h3>
+<ul>
+<li>検収確認後の請求書発行依頼</li>
+<li>請求書URLの取得</li>
+<li>クライアントへの請求書送付</li>
+<li>支払い確認とフォロー</li>
+</ul>
+<h2 id="38">3.8 振り返りフェーズ</h2>
+<h3 id="_18">振り返りミーティング</h3>
+<ul>
+<li>関係者との日程調整</li>
+<li>振り返り用ドキュメントの準備</li>
+<li>良かった点・問題点・改善策の話し合い</li>
+<li>議事録の作成とシェア</li>
+</ul>
+<h3 id="_19">ナレッジ化と共有</h3>
+<ul>
+<li>振り返り結果のまとめ・要約</li>
+<li>チーム全体への共有（社内ポータル、定例会議等）</li>
+<li>次回プロジェクトへの活用ポイント整理</li>
+<li>ナレッジとしての蓄積</li>
+<li>追って具体的な情報は共有します</li>
+</ul>
+        </main>
+    </div>
+
+    <script>
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Sans', 'Noto Sans CJK JP', sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f8f9fa;
+        }
+        
+        /* ヘッダー */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-menu a:hover {
+            opacity: 0.8;
+        }
+        
+        /* チャプターナビゲーション */
+        .chapter-nav {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 60px;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        .chapter-nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .chapter-progress {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+        }
+        
+        .chapter-list {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        .chapter-list a {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 20px;
+            text-decoration: none;
+            color: #666;
+            white-space: nowrap;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .chapter-list a.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .chapter-list a:hover:not(.active) {
+            background: #e0e0e0;
+        }
+        
+        /* メインコンテンツ */
+        .container {
+            max-width: 900px;
+            margin: 160px auto 0;
+            padding: 2rem 20px;
+        }
+        
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* 動画コンテナ */
+        .video-container {
+            margin: 2rem 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* 見出し */
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin: 2.5rem 0 1rem;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem;
+            color: #555;
+        }
+        
+        /* 学習ポイントボックス */
+        .learning-points {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .learning-points h2 {
+            margin-top: 0;
+        }
+        
+        .learning-points ul {
+            margin-left: 1.5rem;
+        }
+        
+        /* チェックリスト */
+        .checklist {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .checklist h2 {
+            margin-top: 0;
+            font-size: 1.3rem;
+        }
+        
+        .checklist ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .checklist li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .checklist input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        /* 実践ヒント */
+        .practice-tip {
+            background: #fff9e6;
+            border: 2px solid #ffd700;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+        
+        .practice-tip h2 {
+            color: #d4a000;
+            margin-top: 0;
+        }
+        
+        /* ナビゲーションボタン */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        
+        .nav-buttons a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s;
+        }
+        
+        .nav-buttons a:hover {
+            transform: translateX(5px);
+        }
+        
+        .nav-buttons a:first-child:hover {
+            transform: translateX(-5px);
+        }
+        
+        .nav-buttons .progress-indicator {
+            font-weight: normal;
+            color: #666;
+        }
+        
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .container {
+                margin-top: 180px;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.4rem;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+        
+        /* アニメーション */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .content > * {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- ヘッダー -->
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">Harukazeガイドライン</a>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="index.html">ホーム</a></li>
+                    <li><a href="introduction.html">基本情報</a></li>
+                    <li><a href="page_10.html">商談マニュアル</a></li>
+                    <li><a href="faq.html">FAQ</a></li>
+                    <li><a href="ai-assistant.html">AIアシスタント</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <!-- チャプターナビゲーション -->
+    {% if chapter_index %}
+    <div class="chapter-nav">
+        <div class="chapter-nav-content">
+            <div class="chapter-progress">
+                <span>{{ chapter_index }}/{{ total_chapters }} 完了</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (chapter_index / total_chapters * 100)|round }}%"></div>
+                </div>
+            </div>
+            <div class="chapter-list">
+                <a href="01_guideline_why.html" {% if chapter_index == 1 %}class="active"{% endif %}>1. なぜ必要か</a>
+                <a href="02_vision.html" {% if chapter_index == 2 %}class="active"{% endif %}>2. 目指す世界</a>
+                <a href="03_values.html" {% if chapter_index == 3 %}class="active"{% endif %}>3. 5つのバリュー</a>
+                <a href="04_creative_value.html" {% if chapter_index == 4 %}class="active"{% endif %}>4. 価値の可視化</a>
+                <a href="05_120_percent.html" {% if chapter_index == 5 %}class="active"{% endif %}>5. 120%の実現</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <div class="content">
+            {{ content }}
+        </div>
+    </div>
+    
+    <script>
+        // チェックボックスの状態を保存
+        document.querySelectorAll('.checklist input[type="checkbox"]').forEach(checkbox => {
+            const key = `chapter_${window.location.pathname}_${checkbox.parentElement.textContent.trim()}`;
+            
+            // 保存された状態を復元
+            if (localStorage.getItem(key) === 'true') {
+                checkbox.checked = true;
+            }
+            
+            // 変更を保存
+            checkbox.addEventListener('change', () => {
+                localStorage.setItem(key, checkbox.checked);
+            });
+        });
+        
+        // プログレスの自動更新
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.checklist input[type="checkbox"]');
+            const checked = document.querySelectorAll('.checklist input[type="checkbox"]:checked');
+            
+            if (checkboxes.length > 0) {
+                const progress = (checked.length / checkboxes.length) * 100;
+                // ローカルストレージに進捗を保存
+                localStorage.setItem(`progress_${window.location.pathname}`, progress);
+            }
+        }
+        
+        document.querySelectorAll('.checklist input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateProgress);
+        });
+    </script>
+</body>
+</html>

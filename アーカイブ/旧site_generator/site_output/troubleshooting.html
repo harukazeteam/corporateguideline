@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 代表的なトラブルシューティング | Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* メインコンテナ */
+        .main-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 260px;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-category {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-category h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background: #e9ecef;
+            color: #0066cc;
+        }
+
+        .sidebar-nav a.active {
+            background: #0066cc;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        /* コンテンツスタイル */
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .main-content h2 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+        }
+
+        .main-content h3 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+        }
+
+        .main-content ul, .main-content ol {
+            margin: 0 0 20px 0;
+            padding-left: 30px;
+        }
+
+        .main-content li {
+            margin-bottom: 8px;
+        }
+
+        /* リンク */
+        .main-content a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .main-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* コード */
+        .main-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SF Mono", Monaco, "Inconsolata", "Fira Code", monospace;
+            font-size: 14px;
+        }
+
+        .main-content pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .main-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* 引用 */
+        .main-content blockquote {
+            border-left: 4px solid #e0e0e0;
+            padding-left: 16px;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        /* 強調 */
+        .main-content strong {
+            font-weight: 600;
+        }
+
+        /* 動画埋め込み */
+        .main-content div[style*="position: relative"] {
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* テーブル */
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .main-content th, .main-content td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .main-content th {
+            font-weight: 600;
+            background: #f8f8f8;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .main-content h1 {
+                font-size: 24px;
+            }
+
+            .main-content h2 {
+                font-size: 20px;
+            }
+
+            .main-content h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Harukazeガイドライン</h1>
+            <p>toB事業 品質管理マニュアル</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-category">
+    <h2>基本情報</h2>
+    <ul class="sidebar-nav">
+        <li><a href="introduction.html">はじめに</a></li>
+    </ul>
+</div>
+<div class="sidebar-category">
+    <h2>必須項目</h2>
+    <ul class="sidebar-nav">
+        <li><a href="director_mindset.html">ディレクターの心得</a></li>
+        <li><a href="business_process.html">全体の業務プロセス</a></li>
+        <li><a href="communication_guide.html">コミュニケーションガイド</a></li>
+        <li><a href="troubleshooting.html">代表的なトラブルシューティング</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="main-content">
+            <h1 id="_1">代表的なトラブルシューティング</h1>
+<h2 id="51">5.1 納期が遅れそうなとき</h2>
+<h3 id="_2">基本原則</h3>
+<p>まず遅れるのは厳禁です。
+100%の案件で遅延がないよう心がけてください。</p>
+<h3 id="_3">それでも遅れてしまいそうなときの対応</h3>
+<ul>
+<li>すぐにディレクターなど上長に共有</li>
+<li>遅れた原因と状況を正しく理解、整理する</li>
+<li>今後遅延がないよう対策を講じる</li>
+<li>すぐにクライアントに遅れる旨を連絡、謝罪</li>
+<li>納期を再設定させていただき、必ず間に合わせる</li>
+</ul>
+<h2 id="52">5.2 品質問題：基本的なミスの連発</h2>
+<h3 id="_4">実際に起きた事例</h3>
+<ul>
+<li>「メイン写真の文字被り」</li>
+<li>「フォントサイズが大きすぎる」</li>
+<li>「コンテンツ幅が広すぎる」</li>
+<li>「デザイン意図の説明不足」と指摘</li>
+</ul>
+<h3 id="_5">品質担保の仕組み</h3>
+<ul>
+<li>二重でチェックする</li>
+<li>仲間にチェックを依頼する</li>
+<li>ちゃんと最初から最後まで確認する</li>
+</ul>
+<h2 id="53">5.3 要件が変わってしまった</h2>
+<h3 id="_6">要件変更の管理プロセス</h3>
+<ul>
+<li>変更内容の詳細確認と記録</li>
+<li>影響範囲の分析（工数・スケジュール・予算）</li>
+<li>変更に伴う追加コストの算出</li>
+<li>クライアントとの合意形成</li>
+<li>契約変更の正式な手続き</li>
+</ul>
+<h2 id="54">5.4 コミュニケーション問題</h2>
+<h3 id="_7">実際に起きた事例</h3>
+<ul>
+<li><strong>謝罪連発</strong>: 「申し訳ございません」ばかりで解決策が見えない</li>
+<li><strong>返信遅延</strong>: 進捗確認の返信が24時間以上遅れる</li>
+<li><strong>役割重複</strong>: 「僕の方で送ります」で作業が重複</li>
+</ul>
+<h3 id="_8">改善策</h3>
+<ul>
+<li><strong>メール構成の統一</strong>: 感謝→現状→対応策→期限</li>
+<li><strong>24時間以内返信ルール</strong>: 詳細は後日でも一報は必須</li>
+<li><strong>役割分担の文書化</strong>: プロジェクト開始時に明確化</li>
+</ul>
+        </main>
+    </div>
+
+    <script>
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

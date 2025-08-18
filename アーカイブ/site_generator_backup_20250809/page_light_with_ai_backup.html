@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>{{TITLE}} | Harukazeガイドライン</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #0066cc;
+            --accent-hover: #0052a3;
+            --border: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --sidebar-bg: #f5f7f9;
+            --sidebar-hover: #e8ecf0;
+            --ai-bg: #f0f7ff;
+            --ai-border: #3498db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        /* AIチャットパネル */
+        .ai-panel {
+            width: 400px;
+            background: var(--ai-bg);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            left: 280px;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+
+        .ai-panel.active {
+            display: flex;
+        }
+
+        .ai-panel-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-panel-header h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .ai-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 20px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .ai-close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .ai-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-message-content {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .ai-message.user .ai-message-content {
+            background: #e3f2fd;
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .ai-send-btn {
+            padding: 10px 20px;
+            background: var(--ai-border);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            background: #2980b9;
+        }
+
+        /* サイドバーフッター */
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--sidebar-bg);
+            border-top: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* フッターリンクスタイル */
+        .footer-link {
+            display: block;
+            padding: 12px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s, background-color 0.2s;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+            background-color: var(--hover-bg);
+        }
+
+        .footer-divider {
+            width: calc(100% - 48px);
+            height: 1px;
+            background: var(--border);
+            margin: 0 24px;
+        }
+
+        .sidebar-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-primary);
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .sidebar-header a:hover h1 {
+            color: var(--accent);
+        }
+        
+        /* モバイル用ハンバーガーメニュー */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0 95px 0; /* フッター分のパディングを調整 */
+        }
+
+        .category {
+            margin-bottom: 20px;
+        }
+
+        .category-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 24px 4px 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 10px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--bg-primary);
+            border-left-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-item.special {
+            background: #ff6b6b;
+            color: white;
+            margin: 5px 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .nav-item.special:hover {
+            background: #ff5252;
+            border-left-color: transparent;
+            color: white;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 20px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.with-ai {
+            margin-left: 680px;
+        }
+
+        .content-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 40px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* 検索ボックス */
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 8px 36px 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        /* 検索結果ドロップダウン */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .search-results.active {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        
+        .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-result-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .search-result-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .search-result-highlight {
+            background: #ffeb3b;
+            color: #000;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .search-no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* コンテンツスタイル */
+        .content-body h1 {
+            color: var(--text-primary);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .content-body h2 {
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+            display: flex;
+            align-items: center;
+            scroll-margin-top: 80px; /* ヘッダー分のオフセット */
+        }
+
+        .content-body h2::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--accent);
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .content-body h3 {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 600;
+            margin: 32px 0 16px 0;
+            scroll-margin-top: 80px;
+        }
+
+        .content-body p {
+            margin-bottom: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .content-body ul, .content-body ol {
+            margin: 16px 0;
+            padding-left: 32px;
+        }
+
+        .content-body li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .content-body strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* 目次のリンク */
+        .content-body a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .content-body a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* コードブロック */
+        .content-body code {
+            background: var(--bg-tertiary);
+            color: var(--error);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+        }
+
+        .content-body pre {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            max-width: 100%;
+        }
+
+        .content-body pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* テーブル */
+        .content-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .content-body th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content-body td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .content-body tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-body tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* 引用 */
+        .content-body blockquote {
+            border-left: 4px solid var(--accent);
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* アラートボックス */
+        .alert {
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #0d47a1;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+
+        /* 動画埋め込み */
+        .video-embed {
+            margin: 24px 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .video-embed iframe {
+            width: 100%;
+            max-width: 720px;
+            height: 405px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loom動画の埋め込みスタイル */
+        .content-body div[style*="position: relative"] {
+            max-width: 800px;
+            margin: 24px auto;
+            background: #000; /* 黒い背景を追加して動画の境界を明確に */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loomのiframeコンテナーの高さを動的に調整 */
+        .loom-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 24px auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            /* aspect-ratioで正確な比率を設定 */
+            aspect-ratio: 16 / 9;
+        }
+        
+        .loom-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            /* iframeの黒い背景も設定 */
+            background: #000;
+        }
+        
+        /* Loomの標準的な比率に対応 */
+        .loom-container[data-aspect="16:10"] {
+            aspect-ratio: 16 / 10;
+        }
+        
+        .loom-container[data-aspect="4:3"] {
+            aspect-ratio: 4 / 3;
+        }
+        
+        .loom-container[data-aspect="1:1"] {
+            aspect-ratio: 1 / 1;
+        }
+
+        .loom-embed {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: inline-block;
+        }
+
+        .loom-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loom-link:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* 目次 */
+        .toc {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 4px;
+        }
+
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+        }
+
+        .toc a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* スクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* 更新リクエストセクション */
+        .update-request-section {
+            margin-top: 80px;
+            padding-top: 40px;
+            border-top: 2px solid var(--border);
+        }
+
+        .update-request-box {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .update-request-box h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .update-request-box p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .update-request-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .update-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .add-btn {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border-color: #4caf50;
+        }
+
+        .add-btn:hover {
+            background: #4caf50;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .fix-btn {
+            background: #fff3e0;
+            color: #e65100;
+            border-color: #ff9800;
+        }
+
+        .fix-btn:hover {
+            background: #ff9800;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+        }
+
+        .question-btn {
+            background: #e3f2fd;
+            color: #0d47a1;
+            border-color: #2196f3;
+        }
+
+        .question-btn:hover {
+            background: #2196f3;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+
+        .update-note {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .update-note a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 968px) {
+            .ai-panel {
+                width: 100%;
+                max-width: 100%;
+                left: 0;
+                z-index: 101;
+            }
+
+            .main-content.with-ai {
+                margin-left: 20%;
+            }
+
+            .sidebar-footer {
+                position: static;
+                padding: 10px 0;
+            }
+
+            .footer-link {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                width: 280px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.with-ai {
+                margin-left: 0;
+            }
+
+            .container {
+                flex-direction: row;
+            }
+            
+            .content-header {
+                padding-left: 60px; /* ハンバーガーボタンの分のスペース */
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                width: 100%;
+            }
+
+            .content-body {
+                padding: 20px;
+                padding-top: 40px;
+            }
+
+            .video-embed iframe {
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+            
+            /* Loom動画のモバイル対応 */
+            .loom-container {
+                margin: 16px 0;
+            }
+        }
+
+        /* プリント対応 */
+        @media print {
+            .sidebar, .ai-panel, .sidebar-footer {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-header {
+                position: relative;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- モバイル用ハンバーガーメニュー -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"></path>
+        </svg>
+    </button>
+    
+    <!-- サイドバーオーバーレイ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+{{SIDEBAR}}
+        </div>
+        
+        <!-- AIチャットパネル -->
+        <div class="ai-panel" id="aiPanel">
+            <div class="ai-panel-header">
+                <h3>AIチャット</h3>
+                <button class="ai-close-btn" onclick="toggleAiPanel()">×</button>
+            </div>
+            <div class="ai-messages" id="aiMessages">
+                <div class="ai-message">
+                    <div class="ai-message-content">
+                        こんにちは！ガイドラインについて何かお困りのことはありますか？お気軽にご質問ください。
+                    </div>
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <textarea class="ai-input" id="aiInput" placeholder="質問を入力..." rows="2"></textarea>
+                    <button class="ai-send-btn" onclick="sendAIMessage()">送信</button>
+                </div>
+            </div>
+        </div>
+        
+        <main class="main-content" id="mainContent">
+            <div class="content-header">
+                <span>{{TITLE}}</span>
+                <div class="search-container">
+                    <input type="text" class="search-box" placeholder="ガイドラインを検索..." id="searchBox">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+            </div>
+            
+            <div class="content-body">
+                {{CONTENT}}
+                <!-- 更新リクエストセクション -->
+                <div class="update-request-section">
+                    <div class="update-request-box">
+                        <h3>💡 このページについて</h3>
+                        <p>内容の追加・修正・質問がある場合は、GitHubでリクエストをお送りください：</p>
+                        <div class="update-request-buttons">
+                            <a href="https://github.com/Hisashi0001/harukaze/issues/new?template=content-addition.md&title=[追加] {{TITLE}}ページ" class="update-btn add-btn" target="_blank">
+                                📝 内容を追加
+                            </a>
+                            <a href="https://github.com/Hisashi0001/harukaze/issues/new?template=content-fix.md&title=[修正] {{TITLE}}ページ" class="update-btn fix-btn" target="_blank">
+                                ✏️ 内容を修正
+                            </a>
+                            <a href="https://github.com/Hisashi0001/harukaze/issues/new?template=question.md&title=[質問] {{TITLE}}ページ" class="update-btn question-btn" target="_blank">
+                                ❓ 質問する
+                            </a>
+                        </div>
+                        <p class="update-note">※GitHubアカウントが必要です。アカウントをお持ちでない場合は、<a href="feedback.html">改善提案フォーム</a>もご利用いただけます。</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        // ページ読み込み時にスクロール位置を復元
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+            if (savedScrollPosition) {
+                const sidebar = document.querySelector('.sidebar-nav');
+                if (sidebar) {
+                    sidebar.scrollTop = parseInt(savedScrollPosition);
+                }
+            }
+        });
+
+        // ページ遷移前にスクロール位置を保存
+        window.addEventListener('beforeunload', function() {
+            const sidebar = document.querySelector('.sidebar-nav');
+            if (sidebar) {
+                sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+            }
+        });
+
+        // AIチャットパネルの表示/非表示
+        function toggleAiPanel() {
+            const aiPanel = document.getElementById('aiPanel');
+            const mainContent = document.getElementById('mainContent');
+            const isActive = aiPanel.classList.contains('active');
+            
+            if (isActive) {
+                aiPanel.classList.remove('active');
+                mainContent.classList.remove('with-ai');
+            } else {
+                aiPanel.classList.add('active');
+                mainContent.classList.add('with-ai');
+            }
+        }
+
+        // AI回答データベース
+        const aiResponses = {
+            '納期': {
+                keywords: ['納期', '遅れ', 'スケジュール', '締切'],
+                response: `納期に関するお悩みですね。以下のポイントをご確認ください：
+
+**1. 早期の状況把握**
+- 遅延の可能性を感じたら、すぐに全体スケジュールを確認
+- デザイナーとの進捗確認を密に行う
+
+**2. クライアントへの連絡**
+- 遅延の可能性がある場合は、早めにクライアントに相談
+- 代替案を必ず提示（部分納品、優先順位の調整など）
+
+**3. 対策の実施**
+- 追加リソースの検討
+- スコープの調整提案
+- バッファを含めたリスケジュール
+
+詳細は「トラブルシューティング」のページもご参照ください。`
+            },
+            'デザイナー': {
+                keywords: ['デザイナー', '連携', 'コミュニケーション', 'フィードバック'],
+                response: `デザイナーとの効果的な連携について説明します：
+
+**1. 明確な指示**
+- 要件を具体的に文書化
+- 参考イメージや事例を共有
+- 優先順位を明確に伝える
+
+**2. 定期的なコミュニケーション**
+- 進捗確認のタイミングを事前に決める
+- 質問しやすい環境づくり
+- 感謝の気持ちを忘れずに
+
+**3. フィードバックの方法**
+- 良い点を先に伝える
+- 改善点は具体的に
+- 一緒に解決策を考える姿勢
+
+「コミュニケーションガイド」のページに詳しい情報があります。`
+            },
+            '品質': {
+                keywords: ['品質', 'チェック', 'クオリティ', '確認'],
+                response: `品質チェックの重要ポイントをご紹介します：
+
+**1. チェックリストの活用**
+✅ ブランドガイドラインとの整合性
+✅ 誤字脱字の確認
+✅ 画像の解像度とフォーマット
+✅ リンクの動作確認
+✅ レスポンシブ対応（Webの場合）
+
+**2. 段階的なレビュー**
+- ラフ段階での方向性確認
+- 中間チェックでの詳細確認
+- 最終チェックでの総合確認
+
+**3. クライアント視点**
+- ターゲットユーザーの立場で確認
+- 競合他社との差別化ポイント
+- ビジネス目標との整合性
+
+詳しくは「品質管理」のセクションをご覧ください。`
+            }
+        };
+
+        function findBestResponse(input) {
+            const lowerInput = input.toLowerCase();
+            
+            for (const [key, data] of Object.entries(aiResponses)) {
+                for (const keyword of data.keywords) {
+                    if (lowerInput.includes(keyword)) {
+                        return data.response;
+                    }
+                }
+            }
+            
+            return `ご質問ありがとうございます。「${input}」について、ガイドラインを確認しています。
+
+現在、この質問に対する具体的な回答を準備中です。より具体的な状況をお教えいただけますでしょうか？
+
+また、ガイドライン内の検索機能もぜひご活用ください。`;
+        }
+
+        // AIメッセージ送信
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // ユーザーメッセージを追加
+            addAIMessage(message, 'user');
+            
+            // 入力欄をクリア
+            input.value = '';
+            
+            // ローディング表示
+            addAIMessage('考えています...', 'ai', 'loading');
+            
+            try {
+                // Vercel APIエンドポイント
+                const apiUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3000/api/chat' 
+                    : 'https://guideline-ai-chat.vercel.app/api/chat-gemini';
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // ローディングメッセージを削除
+                const messagesDiv = document.getElementById('aiMessages');
+                const loadingMsg = messagesDiv.querySelector('.ai-message.ai:last-child');
+                if (loadingMsg && loadingMsg.textContent.includes('考えています...')) {
+                    loadingMsg.remove();
+                }
+                
+                // AI応答を追加
+                let responseText = data.response;
+                
+                // 関連ページがある場合は追加
+                if (data.relatedPages && data.relatedPages.length > 0) {
+                    responseText += '\n\n**関連ページ:**\n';
+                    data.relatedPages.forEach(page => {
+                        responseText += `- [${page.title}](${page.url}) (${page.category})\n`;
+                    });
+                }
+                
+                addAIMessage(responseText, 'ai');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // ローディングメッセージを削除
+                const messagesDiv = document.getElementById('aiMessages');
+                const loadingMsg = messagesDiv.querySelector('.ai-message.ai:last-child');
+                if (loadingMsg && loadingMsg.textContent.includes('考えています...')) {
+                    loadingMsg.remove();
+                }
+                
+                // フォールバック: 従来のローカル応答を使用
+                const response = findBestResponse(message);
+                addAIMessage(response + '\n\n*（注: 現在オフラインモードで動作しています）*', 'ai');
+            }
+        }
+
+        function addAIMessage(text, sender, className = '') {
+            const messagesDiv = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender} ${className}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'ai-message-content';
+            
+            // Markdownリンクを実際のリンクに変換
+            let html = text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            contentDiv.innerHTML = html;
+            
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.appendChild(messageDiv);
+            
+            // スクロールを最下部に
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Enterキーで送信
+        document.getElementById('aiInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendAIMessage();
+            }
+        });
+
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                if (item.getAttribute('href') === currentPage) {
+                    item.classList.add('active');
+                }
+            });
+
+            // スムーススクロール for アンカーリンク
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // YouTube動画の自動リサイズ
+            function resizeVideos() {
+                const videoEmbeds = document.querySelectorAll('.video-embed iframe');
+                videoEmbeds.forEach(iframe => {
+                    const container = iframe.parentElement;
+                    const containerWidth = container.offsetWidth - 40;
+                    if (containerWidth < 720) {
+                        iframe.style.width = containerWidth + 'px';
+                        iframe.style.height = (containerWidth * 9/16) + 'px';
+                    }
+                });
+            }
+
+            resizeVideos();
+            window.addEventListener('resize', resizeVideos);
+            
+            // Loom動画のアスペクト比を最適化
+            function optimizeLoomVideos() {
+                // Loomの埋め込みコンテナを全て取得
+                const loomContainers = document.querySelectorAll('div[style*="position: relative"][style*="padding-bottom"]');
+                
+                loomContainers.forEach(container => {
+                    const iframe = container.querySelector('iframe[src*="loom.com"]');
+                    if (iframe) {
+                        // コンテナにクラスを追加してスタイリングを改善
+                        container.classList.add('loom-container');
+                        
+                        // インラインスタイルを削除してCSSクラスで制御
+                        container.style.position = '';
+                        container.style.paddingBottom = '';
+                        container.style.height = '';
+                        
+                        // iframeのスタイルも調整
+                        iframe.style.position = '';
+                        iframe.style.top = '';
+                        iframe.style.left = '';
+                        iframe.style.width = '';
+                        iframe.style.height = '';
+                        
+                        // Loomの実際のアスペクト比に応じて調整（多くの場合16:10や4:3）
+                        // デフォルトは16:9だが、実際の動画に応じて自動調整される
+                        container.style.aspectRatio = '16 / 9';
+                    }
+                });
+            }
+            
+            // ページ読み込み時とDOM変更時に実行
+            optimizeLoomVideos();
+            
+            // 動的にコンテンツが追加される場合に対応
+            const observer = new MutationObserver(optimizeLoomVideos);
+            observer.observe(document.body, { childList: true, subtree: true });
+            
+            // モバイルメニューの制御
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                });
+                
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+                
+                // サイドバー内のリンクをクリックしたらメニューを閉じる
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('active');
+                            sidebarOverlay.classList.remove('active');
+                        }
+                    });
+                });
+            }
+            
+            // 検索機能の実装
+            const searchBox = document.getElementById('searchBox');
+            const searchResults = document.getElementById('searchResults');
+            let searchIndex = [];
+            
+            // 検索インデックスを読み込む
+            fetch('search-index.json')
+                .then(response => response.json())
+                .then(data => {
+                    searchIndex = data;
+                })
+                .catch(error => {
+                    console.error('検索インデックスの読み込みに失敗しました:', error);
+                });
+            
+            // 検索実行
+            function performSearch(query) {
+                if (!query || query.length < 2 || searchIndex.length === 0) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                const results = [];
+                const lowerQuery = query.toLowerCase();
+                
+                // 検索インデックスから検索
+                searchIndex.forEach(item => {
+                    const pageTitleMatch = item.pageTitle.toLowerCase().includes(lowerQuery);
+                    const sectionTitleMatch = item.sectionTitle.toLowerCase().includes(lowerQuery);
+                    const contentMatch = item.content.toLowerCase().includes(lowerQuery);
+                    
+                    if (pageTitleMatch || sectionTitleMatch || contentMatch) {
+                        // コンテンツから該当部分を抽出
+                        let excerpt = '';
+                        if (contentMatch) {
+                            const index = item.content.toLowerCase().indexOf(lowerQuery);
+                            const start = Math.max(0, index - 50);
+                            const end = Math.min(item.content.length, index + query.length + 50);
+                            excerpt = '...' + item.content.substring(start, end) + '...';
+                        } else {
+                            excerpt = item.content.substring(0, 150) + '...';
+                        }
+                        
+                        // ハイライト処理
+                        const regex = new RegExp(query, 'gi');
+                        excerpt = excerpt.replace(regex, match => `<span class="search-result-highlight">${match}</span>`);
+                        
+                        // タイトルの構築
+                        let displayTitle = item.pageTitle;
+                        if (item.sectionTitle !== item.pageTitle) {
+                            displayTitle = `${item.pageTitle} > ${item.sectionTitle}`;
+                        }
+                        
+                        results.push({
+                            title: displayTitle,
+                            excerpt: excerpt,
+                            url: item.url,
+                            sectionId: item.sectionId,
+                            category: item.category
+                        });
+                    }
+                });
+                
+                // 重複を除去（同じURLとセクションIDの組み合わせ）
+                const uniqueResults = results.filter((result, index, self) =>
+                    index === self.findIndex((r) => r.url === result.url && r.sectionId === result.sectionId)
+                );
+                
+                displaySearchResults(uniqueResults);
+            }
+            
+            // 検索結果の表示
+            function displaySearchResults(results) {
+                searchResults.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="search-no-results">検索結果が見つかりませんでした</div>';
+                } else {
+                    results.forEach(result => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `
+                            <div class="search-result-title">${result.title}</div>
+                            ${result.excerpt ? `<div class="search-result-content">${result.excerpt}</div>` : ''}
+                        `;
+                        item.addEventListener('click', () => {
+                            // セクションIDがある場合はアンカーリンクを付加
+                            let targetUrl = result.url;
+                            if (result.sectionId && result.sectionId !== result.url.replace('.html', '')) {
+                                targetUrl = result.url + '#' + result.sectionId;
+                            }
+                            window.location.href = targetUrl;
+                        });
+                        searchResults.appendChild(item);
+                    });
+                }
+                
+                searchResults.classList.add('active');
+            }
+            
+            // 検索イベントの設定
+            let searchTimeout;
+            searchBox.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(e.target.value);
+                }, 300);
+            });
+            
+            // 検索ボックス外をクリックしたら結果を非表示
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    searchResults.classList.remove('active');
+                }
+            });
+            
+            // ESCキーで検索結果を閉じる
+            searchBox.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchResults.classList.remove('active');
+                    searchBox.blur();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

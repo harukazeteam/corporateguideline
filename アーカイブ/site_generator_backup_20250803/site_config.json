@@ -1,0 +1,58 @@
+{
+  "site_title": "Harukazeガイドライン",
+  "site_subtitle": "toB事業 品質管理マニュアル",
+  "source_folder": "/Users/ogatahisashi/Library/CloudStorage/GoogleDrive-harukazeteam01@gmail.com/My Drive/HarukazeDatabase/Dynamic Knowledge/toB knowledge/ガイドラインプロジェクト/01_現行ガイドライン/サイトコンテンツ",
+  "output_folder": "site_output",
+  "template_file": "_templates/page_light.html",
+  
+  "include_files": [
+    "01_はじめに.md",
+    "02_ディレクターの心得.md",
+    "03_全体の業務プロセス.md",
+    "04_コミュニケーションガイド.md",
+    "05_代表的なトラブルシューティング.md",
+    "06_ガイドライン要点まとめ.md",
+    "07_実践改善事例集.md"
+  ],
+  
+  "files": {
+    "01_はじめに.md": {
+      "title": "はじめに",
+      "category": "基本情報"
+    },
+    "02_ディレクターの心得.md": {
+      "title": "ディレクターの心得",
+      "category": "基本情報"
+    },
+    "03_全体の業務プロセス.md": {
+      "title": "全体の業務プロセス",
+      "category": "基本情報"
+    },
+    "04_コミュニケーションガイド.md": {
+      "title": "コミュニケーションガイド",
+      "category": "基本情報"
+    },
+    "05_代表的なトラブルシューティング.md": {
+      "title": "代表的なトラブルシューティング",
+      "category": "基本情報"
+    },
+    "06_ガイドライン要点まとめ.md": {
+      "title": "ガイドライン要点まとめ",
+      "category": "その他"
+    },
+    "07_実践改善事例集.md": {
+      "title": "実践改善事例集",
+      "category": "その他"
+    }
+  },
+  
+  "filename_replacements": {
+    "01_はじめに": "index",
+    "02_ディレクターの心得": "director_mindset",
+    "03_全体の業務プロセス": "business_process",
+    "04_コミュニケーションガイド": "communication_guide",
+    "05_代表的なトラブルシューティング": "troubleshooting",
+    "06_ガイドライン要点まとめ": "guideline_summary",
+    "07_実践改善事例集": "improvement_cases"
+  }
+}

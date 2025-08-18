@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 ディレクターの心得 | Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* メインコンテナ */
+        .main-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 260px;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-category {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-category h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background: #e9ecef;
+            color: #0066cc;
+        }
+
+        .sidebar-nav a.active {
+            background: #0066cc;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        /* コンテンツスタイル */
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .main-content h2 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+        }
+
+        .main-content h3 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+        }
+
+        .main-content ul, .main-content ol {
+            margin: 0 0 20px 0;
+            padding-left: 30px;
+        }
+
+        .main-content li {
+            margin-bottom: 8px;
+        }
+
+        /* リンク */
+        .main-content a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .main-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* コード */
+        .main-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SF Mono", Monaco, "Inconsolata", "Fira Code", monospace;
+            font-size: 14px;
+        }
+
+        .main-content pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .main-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* 引用 */
+        .main-content blockquote {
+            border-left: 4px solid #e0e0e0;
+            padding-left: 16px;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        /* 強調 */
+        .main-content strong {
+            font-weight: 600;
+        }
+
+        /* 動画埋め込み */
+        .main-content div[style*="position: relative"] {
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* テーブル */
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .main-content th, .main-content td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .main-content th {
+            font-weight: 600;
+            background: #f8f8f8;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .main-content h1 {
+                font-size: 24px;
+            }
+
+            .main-content h2 {
+                font-size: 20px;
+            }
+
+            .main-content h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Harukazeガイドライン</h1>
+            <p>toB事業 品質管理マニュアル</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-category">
+    <h2>基本情報</h2>
+    <ul class="sidebar-nav">
+        <li><a href="introduction.html">はじめに</a></li>
+    </ul>
+</div>
+<div class="sidebar-category">
+    <h2>必須項目</h2>
+    <ul class="sidebar-nav">
+        <li><a href="director_mindset.html">ディレクターの心得</a></li>
+        <li><a href="business_process.html">全体の業務プロセス</a></li>
+        <li><a href="communication_guide.html">コミュニケーションガイド</a></li>
+        <li><a href="troubleshooting.html">代表的なトラブルシューティング</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="main-content">
+            <h1 id="_1">ディレクターの心得</h1>
+<h2 id="_2">動画で理解する（必須）</h2>
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/40762dd6089a4498a7f82ed50b1d4939?sid=a70f0d02-ecd8-458c-ac7f-6f5c3e7c2755" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; margin-top: 20px;"><iframe src="https://www.loom.com/embed/78b6c0dc7c1846d0b3ff7dee73e8ef7b?sid=f464b605-b42e-43d2-a77a-17bb9b43d236" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<div style="position: relative; padding-bottom: 56.25%; height: 0; margin-top: 20px;"><iframe src="https://www.loom.com/embed/12c75a32d7794a14a71789cb385c6004?sid=d48f1f7a-995a-4d6a-b501-df4426d9a018" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+<h2 id="_3">全体像におけるディレクター位置づけ、役割</h2>
+<p>デザインという手段を用いて、事業を大きく推進させるHarukazeとのパートナー</p>
+<h3 id="_4">ディレクターの本質的な役割</h3>
+<ul>
+<li><strong>成果担保・進行管理・情報共有</strong>の3つの柱</li>
+<li>デザイナーが迷わず本気で走れるようにする舵取り役</li>
+<li>方向を気にせず走り回るデザイナーの方向づけ</li>
+</ul>
+<h3 id="harukaze">Harukazeの顔であるという自覚</h3>
+<ul>
+<li><strong>Harukazeの印象を左右する重要なポジション</strong></li>
+<li>クライアントと直接やりとりする責任</li>
+<li>ビジネスマナーを守り、当事者意識を持った行動</li>
+</ul>
+<h2 id="_5">主要な責任範囲</h2>
+<h3 id="_6">デザイン品質、成果担保</h3>
+<ul>
+<li>成果物の最終責任（不備があった場合の責任はディレクターにある）</li>
+<li>デザイナーから上がってくるデザインの品質管理</li>
+<li>数値的実績（CVR、クリック率など）を狙えるコンテンツの納品</li>
+</ul>
+<h3 id="_7">デザイナーのアサイン・管理</h3>
+<ul>
+<li>担当デザイン及び報酬の決定</li>
+<li>月間本数、報酬の管理</li>
+<li>デザイナー選定とチーム編成</li>
+</ul>
+<h3 id="_8">全体の進捗管理</h3>
+<ul>
+<li>〆切は相手の基準に合わせる（相手の営業時間を把握）</li>
+<li>本当の〆切りはいつなのかを常に意識</li>
+<li>スケジュール逆算と管理</li>
+</ul>
+<h3 id="_9">事業貢献への責任</h3>
+<ul>
+<li>クロスセル提案で単価に貢献</li>
+<li>案件を円滑に回すディレクション力</li>
+<li>実績公開可能性の確認と管理</li>
+</ul>
+<h2 id="_10">何を大事に行動して欲しいか</h2>
+<h3 id="_11">プロフェッショナリズム</h3>
+<ul>
+<li>クライアントとの円滑なコミュニケーション力</li>
+<li>テキストコミュニケーションの質の高さ</li>
+<li>MTG進行の責任とスキル</li>
+</ul>
+<h3 id="_12">課題解決志向・顧客志向</h3>
+<ul>
+<li>マーケ担当の指示を汲み取るマーケティング知識</li>
+<li>クライアントのビジネス成果への貢献意識</li>
+<li>問題の予兆察知と対応力</li>
+</ul>
+<h3 id="_13">オーナーシップ・責任感</h3>
+<ul>
+<li>データ管理の徹底（MECEの原則）</li>
+<li>ファイル管理の責任（aiデータは必ず毎回共有）</li>
+<li>最終納品物の完全性確保</li>
+</ul>
+<h3 id="_14">継続的学習の姿勢</h3>
+<ul>
+<li>業界知識のアップデート</li>
+<li>新しい手法・ツールの習得</li>
+<li>失敗からの学習と改善</li>
+</ul>
+<h2 id="harukaze-5">Harukaze 5バリューの実践</h2>
+<h3 id="1">1. 最速プロトタイプ</h3>
+<ul>
+<li>迅速な検証サイクルの構築</li>
+<li>早期の方向性確認とフィードバック</li>
+</ul>
+<h3 id="2">2. 昨日と同じことはしない</h3>
+<ul>
+<li>継続的なプロセス改善</li>
+<li>新しいアプローチの積極的な導入</li>
+</ul>
+<h3 id="3">3. 個を活かし、チームで最大化する</h3>
+<ul>
+<li>デザイナーの強みを活かしたアサイン</li>
+<li>チーム全体のパフォーマンス最大化</li>
+</ul>
+<h3 id="4-120">4. 期待値の120%を出す</h3>
+<ul>
+<li>クライアント期待を上回る成果の追求</li>
+<li>提案力と付加価値の創出</li>
+</ul>
+<h3 id="5">5. 「当たり前」を疑い、新しい風を吹き込む</h3>
+<ul>
+<li>既存の手法に満足せず、革新的な解決策の提案</li>
+<li>業界の常識を疑う批判的思考</li>
+</ul>
+        </main>
+    </div>
+
+    <script>
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

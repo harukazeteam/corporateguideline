@@ -1,0 +1,1956 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>クロージング成功の秘訣 | Harukazeガイドライン</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #0066cc;
+            --accent-hover: #0052a3;
+            --border: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --sidebar-bg: #f5f7f9;
+            --sidebar-hover: #e8ecf0;
+            --ai-bg: #f0f7ff;
+            --ai-border: #3498db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            overflow-y: auto;
+            transition: transform 0.3s ease;
+        }
+
+        /* AIチャットパネル */
+        .ai-panel {
+            width: 400px;
+            background: var(--ai-bg);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            left: 280px;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            z-index: 99;
+            transition: all 0.3s ease;
+        }
+
+        .ai-panel.active {
+            display: flex;
+        }
+
+        .ai-panel-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-panel-header h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .ai-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 20px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .ai-close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .ai-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-message-content {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .ai-message.user .ai-message-content {
+            background: #e3f2fd;
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .ai-send-btn {
+            padding: 10px 20px;
+            background: var(--ai-border);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .ai-send-btn:hover {
+            background: #2980b9;
+        }
+
+        /* サイドバーフッター */
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--sidebar-bg);
+            border-top: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* フッターリンクスタイル */
+        .footer-link {
+            display: block;
+            padding: 12px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s, background-color 0.2s;
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+            background-color: var(--hover-bg);
+        }
+
+        .footer-divider {
+            width: calc(100% - 48px);
+            height: 1px;
+            background: var(--border);
+            margin: 0 24px;
+        }
+
+        .sidebar-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-primary);
+        }
+
+        .sidebar-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .sidebar-header a:hover h1 {
+            color: var(--accent);
+        }
+        
+        /* モバイル用ハンバーガーメニュー */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-menu-toggle svg {
+            width: 24px;
+            height: 24px;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 99;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0 95px 0; /* フッター分のパディングを調整 */
+        }
+
+        .category {
+            margin-bottom: 8px;
+        }
+
+        .category-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 16px;
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            transition: all 0.2s ease;
+        }
+        
+        .category-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .category-title .toggle-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            /* デフォルト: 右向き三角形（閉じた状態） */
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--text-secondary);
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        /* 開いた状態は下向き三角形にするため90度回転 */
+        .category:not(.collapsed) .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .category-title:hover .toggle-icon {
+            border-left-color: var(--text-primary);
+        }
+        
+        /* デフォルトでカテゴリは閉じた状態 */
+        .category {
+            /* 初期状態で閉じておく */
+        }
+        
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        /* 明示的に開いた状態のスタイル */
+        .category:not(.collapsed) .category-content {
+            max-height: 1000px;
+        }
+        
+        /* サブカテゴリ */
+        .subcategory {
+            margin-left: 24px;
+            margin-bottom: 4px;
+        }
+        
+        .subcategory-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 6px 16px 6px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+        
+        .subcategory-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .subcategory-title .toggle-icon {
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .subcategory.collapsed .toggle-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .subcategory-content {
+            max-height: 500px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .subcategory.collapsed .subcategory-content {
+            max-height: 0;
+        }
+        
+        .subcategory .nav-item {
+            font-size: 13px;
+            padding: 8px 24px 8px 32px;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 8px 24px 8px 32px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--bg-primary);
+            border-left-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        .nav-item.special {
+            background: #ff6b6b;
+            color: white;
+            margin: 5px 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .nav-item.special:hover {
+            background: #ff5252;
+            border-left-color: transparent;
+            color: white;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 10px 20px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.with-ai {
+            margin-left: 680px;
+        }
+
+        .content-header {
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 40px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        /* 検索ボックス */
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 8px 36px 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        /* 検索結果ドロップダウン */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .search-results.active {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        
+        .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+        
+        .search-result-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .search-result-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .search-result-highlight {
+            background: #ffeb3b;
+            color: #000;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .search-no-results {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* コンテンツスタイル */
+        .content-body h1 {
+            color: var(--text-primary);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .content-body h2 {
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: 600;
+            margin: 40px 0 20px 0;
+            display: flex;
+            align-items: center;
+            scroll-margin-top: 80px; /* ヘッダー分のオフセット */
+        }
+
+        .content-body h2::before {
+            content: '';
+            width: 4px;
+            height: 28px;
+            background: var(--accent);
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+
+        .content-body h3 {
+            color: var(--text-primary);
+            font-size: 20px;
+            font-weight: 600;
+            margin: 32px 0 16px 0;
+            scroll-margin-top: 80px;
+        }
+
+        .content-body p {
+            margin-bottom: 16px;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .content-body ul, .content-body ol {
+            margin: 16px 0;
+            padding-left: 32px;
+        }
+
+        .content-body li {
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            line-height: 1.8;
+        }
+
+        .content-body strong {
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* 目次のリンク */
+        .content-body a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .content-body a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* コードブロック */
+        .content-body code {
+            background: var(--bg-tertiary);
+            color: var(--error);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'SF Mono', Monaco, monospace;
+            font-size: 14px;
+        }
+
+        .content-body pre {
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+            max-width: 100%;
+        }
+
+        .content-body pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        /* テーブル */
+        .content-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .content-body th {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 12px 16px;
+            font-weight: 600;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .content-body td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .content-body tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-body tr:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* 引用 */
+        .content-body blockquote {
+            border-left: 4px solid var(--accent);
+            background: var(--bg-secondary);
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* アラートボックス */
+        .alert {
+            padding: 16px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            color: #0d47a1;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            color: #2e7d32;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            border-color: #ff9800;
+            color: #e65100;
+        }
+
+        /* 動画埋め込み */
+        .video-embed {
+            margin: 24px 0;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+        }
+
+        .video-embed iframe {
+            width: 100%;
+            max-width: 720px;
+            height: 405px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loom動画の埋め込みスタイル */
+        .content-body div[style*="position: relative"] {
+            max-width: 800px;
+            margin: 24px auto;
+            background: #000; /* 黒い背景を追加して動画の境界を明確に */
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Loomのiframeコンテナーの高さを動的に調整 */
+        .loom-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 24px auto;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            /* aspect-ratioで正確な比率を設定 */
+            aspect-ratio: 16 / 9;
+        }
+        
+        .loom-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            /* iframeの黒い背景も設定 */
+            background: #000;
+        }
+        
+        /* Loomの標準的な比率に対応 */
+        .loom-container[data-aspect="16:10"] {
+            aspect-ratio: 16 / 10;
+        }
+        
+        .loom-container[data-aspect="4:3"] {
+            aspect-ratio: 4 / 3;
+        }
+        
+        .loom-container[data-aspect="1:1"] {
+            aspect-ratio: 1 / 1;
+        }
+
+        .loom-embed {
+            margin: 16px 0;
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: inline-block;
+        }
+
+        .loom-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loom-link:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* 目次 */
+        .toc {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc ul ul {
+            padding-left: 20px;
+            margin-top: 4px;
+        }
+
+        .toc a {
+            color: var(--accent);
+            text-decoration: none;
+            display: block;
+            padding: 4px 0;
+        }
+
+        .toc a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* スクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-secondary);
+        }
+
+        /* 更新リクエストミニマル版 */
+        .update-request-minimal {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .update-request-minimal p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .update-request-minimal a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted var(--accent);
+        }
+
+        .update-request-minimal a:hover {
+            color: var(--accent-hover);
+            border-bottom-style: solid;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 968px) {
+            .ai-panel {
+                width: 100%;
+                max-width: 100%;
+                left: 0;
+                z-index: 101;
+            }
+
+            .main-content.with-ai {
+                margin-left: 20%;
+            }
+
+            .sidebar-footer {
+                position: static;
+                padding: 10px 0;
+            }
+
+            .footer-link {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .sidebar {
+                width: 280px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .main-content.with-ai {
+                margin-left: 0;
+            }
+
+            .container {
+                flex-direction: row;
+            }
+            
+            .content-header {
+                padding-left: 60px; /* ハンバーガーボタンの分のスペース */
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+            
+            .search-container {
+                width: 100%;
+            }
+
+            .content-body {
+                padding: 20px;
+                padding-top: 40px;
+            }
+
+            .video-embed iframe {
+                height: auto;
+                aspect-ratio: 16/9;
+            }
+            
+            /* Loom動画のモバイル対応 */
+            .loom-container {
+                margin: 16px 0;
+            }
+        }
+
+        /* プリント対応 */
+        @media print {
+            .sidebar, .ai-panel, .sidebar-footer {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-header {
+                position: relative;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- モバイル用ハンバーガーメニュー -->
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"></path>
+        </svg>
+    </button>
+    
+    <!-- サイドバーオーバーレイ -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="container">
+        <div class="sidebar" id="sidebar">
+<div class="sidebar-header">
+    <a href="index.html" style="text-decoration: none;">
+        <h1>Harukazeガイドライン</h1>
+    </a>
+    <p>ディレクター向け品質管理ガイド</p>
+</div>
+<div class="sidebar-nav">
+<a href="index.html" class="nav-item">ホーム</a>
+<div class="nav-divider"></div>
+<div class="category collapsed">
+    <div class="category-title">基本情報</div>
+    <div class="category-content">
+        <a href="introduction.html" class="nav-item">はじめに</a>
+        <a href="director-mindset.html" class="nav-item">ディレクターの心得</a>
+        <a href="work-process.html" class="nav-item">全体の業務プロセス</a>
+        <a href="communication.html" class="nav-item">コミュニケーションガイド</a>
+        <a href="troubleshooting.html" class="nav-item">代表的なトラブルシューティング</a>
+    </div>
+</div>
+<div class="category collapsed">
+    <div class="category-title">商談マニュアル</div>
+    <div class="category-content">
+        <a href="sales-overview.html" class="nav-item">法人商談の全体像</a>
+        <a href="sales-mindset.html" class="nav-item">法人商談の心得</a>
+        <a href="trust-building.html" class="nav-item">信頼関係の構築テクニック</a>
+        <a href="hearing-master.html" class="nav-item">ヒアリングマスター講座</a>
+        <a href="proposal-techniques.html" class="nav-item">提案力を高める実践テクニック</a>
+        <a href="closing-success.html" class="nav-item active">クロージング成功の秘訣</a>
+        <a href="product-strategies.html" class="nav-item">商材別の攻略法</a>
+        <a href="difficulty-handling.html" class="nav-item">難易度別の対処法</a>
+    </div>
+</div>
+<div class="category collapsed">
+    <div class="category-title">その他</div>
+    <div class="category-content">
+        <a href="page.html" class="nav-item">AIチャット</a>
+        <a href="faq.html" class="nav-item">よくある質問（FAQ）</a>
+        <a href="improvement-cases.html" class="nav-item">実践改善事例集</a>
+    </div>
+</div>
+</div>
+<div class="sidebar-footer">
+    <button class="footer-link" id="aiToggleBtn" onclick="toggleAiPanel()">AIチャット</button>
+    <div class="footer-divider"></div>
+    <a href="feedback.html" class="footer-link">ガイドライン追加/改善</a>
+</div>
+        </div>
+        
+        <!-- AIチャットパネル -->
+        <div class="ai-panel" id="aiPanel">
+            <div class="ai-panel-header">
+                <h3>AIチャット</h3>
+                <button class="ai-close-btn" onclick="toggleAiPanel()">×</button>
+            </div>
+            <div class="ai-messages" id="aiMessages">
+                <div class="ai-message">
+                    <div class="ai-message-content">
+                        こんにちは！ガイドラインについて何かお困りのことはありますか？お気軽にご質問ください。
+                    </div>
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <textarea class="ai-input" id="aiInput" placeholder="質問を入力..." rows="2"></textarea>
+                    <button class="ai-send-btn" onclick="sendAIMessage()">送信</button>
+                </div>
+            </div>
+        </div>
+        
+        <main class="main-content" id="mainContent">
+            <div class="content-header">
+                <span>クロージング成功の秘訣</span>
+                <div class="search-container">
+                    <input type="text" class="search-box" placeholder="ガイドラインを検索..." id="searchBox">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                    </svg>
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+            </div>
+            
+            <div class="content-body">
+                <h1 id="_1">クロージング成功の秘訣</h1>
+<h2 id="-">決断を後押しする心理テクニック - 背中を押す、でも押し売りはしない</h2>
+<p>「じゃあ、検討しておきます」</p>
+<p>商談の最後にこの言葉を聞いて、がっかりした経験はありませんか？1時間かけて説明し、相手も興味を示していたのに、結局決断してもらえない...</p>
+<p>実は、多くの商談が失敗する理由は、<strong>クロージングの技術不足</strong>にあります。どんなに良い提案でも、最後の一押しがなければ、相手は行動に移せません。</p>
+<p>この章では、相手に嫌われることなく、自然に「お願いします」と言ってもらえるクロージングの極意をお伝えします。押し売りではなく、<strong>相手の決断をサポートする</strong>という意識が成功の鍵です。</p>
+<h2 id="_2">なぜクロージングで失敗するのか</h2>
+<h3 id="_3">日本人特有の「遠慮」という壁</h3>
+<p><strong>よくある失敗パターン</strong></p>
+<pre class="codehilite"><code>営業：「...ということで、いかがでしょうか？」
+クライアント：「なるほど、良さそうですね」
+営業：「じゃあ、ご検討ください」（←ここが問題！）
+クライアント：「はい、検討します」
+→ その後、連絡なし
+</code></pre>
+
+<p>遠慮して最後の一押しを避けた結果、せっかくの商談が無駄になってしまうのです。</p>
+<h3 id="_4">「検討します」の本当の意味</h3>
+<p>実は「検討します」には、3つの意味が隠れています：</p>
+<ol>
+<li><strong>本当に検討が必要</strong>（20%）</li>
+<li>社内承認が必要</li>
+<li>
+<p>予算の確認が必要</p>
+</li>
+<li>
+<p><strong>迷っている</strong>（60%）</p>
+</li>
+<li>決め手に欠ける</li>
+<li>
+<p>不安が残っている</p>
+</li>
+<li>
+<p><strong>断り文句</strong>（20%）</p>
+</li>
+<li>興味がない</li>
+<li>他で決めている</li>
+</ol>
+<p><strong>重要なのは2番目の60%</strong>。この層は、適切なクロージングで「YES」に変えられる可能性が高いのです。</p>
+<h2 id="yes-">小さなYESを積み重ねる - コミットメントの階段</h2>
+<h3 id="_5">一貫性の法則を味方につける</h3>
+<p>人は一度「YES」と言ったことに対して、一貫性を保とうとする心理があります。これを活用し、小さな合意を積み重ねていきます。</p>
+<p><strong>実践例：階段を上るように合意を得る</strong></p>
+<pre class="codehilite"><code>ステップ1：「デザインの重要性は感じていただけましたか？」
+→「はい」
+
+ステップ2：「現状のままだと、機会損失が続きますよね？」
+→「そうですね」
+
+ステップ3：「できれば早めに改善したいですよね？」
+→「はい、そう思います」
+
+ステップ4：「でしたら、まず小さく始めてみませんか？」
+→「それなら...」
+</code></pre>
+
+<h3 id="_6">マイクロコミットメント戦略</h3>
+<p><strong>大きな決断を小さく分解する</strong></p>
+<p>❌ <strong>NG例：</strong>「年間契約で100万円です。どうですか？」</p>
+<p>✅ <strong>OK例：</strong></p>
+<pre class="codehilite"><code>「まず1ヶ月、お試しプランから始めませんか？」
+「最初はLPだけ、うまくいったら他も」
+「とりあえず、詳細な見積もりを作らせてください」
+</code></pre>
+
+<p>人は大きな決断より、小さな決断の方がしやすいものです。</p>
+<h2 id="_7">決断の期限を設ける技術</h2>
+<h3 id="_8">なぜ期限が必要なのか</h3>
+<p>期限がないと、人は決断を先延ばしにします。適切な期限設定は、相手の決断を助ける優しさでもあるのです。</p>
+<h3 id="_9">効果的な期限の作り方</h3>
+<p><strong>1. 自然な理由を添える</strong></p>
+<pre class="codehilite"><code>「実は来月から繁忙期に入るので、
+今月中にご決断いただければ、
+優先的にスケジュールを確保できます」
+</code></pre>
+
+<p><strong>2. 相手にメリットのある期限</strong></p>
+<pre class="codehilite"><code>「月末までにご契約いただければ、
+今月分は日割りではなく、
+来月からのスタートでOKです」
+</code></pre>
+
+<p><strong>3. 限定性を演出</strong></p>
+<pre class="codehilite"><code>「このプランは月3社限定なんです。
+今月はあと1枠なので、
+金曜日までにお返事いただけますか？」
+</code></pre>
+
+<h3 id="_10">「スケジュール確保」という魔法の言葉</h3>
+<pre class="codehilite"><code>営業：「いつ頃お返事いただけそうですか？」
+クライアント：「来週中には...」
+営業：「承知しました。では来週まで、
+      デザイナーのスケジュールを仮押さえしておきますね」
+</code></pre>
+
+<p>この一言で、相手は「準備してもらっている」というプレッシャーを感じ、返答率が格段に上がります。</p>
+<h2 id="5">感情に訴えかける5つのトリガー</h2>
+<h3 id="1">1. 損失回避の心理</h3>
+<p>人は「得をする」より「損をしない」ことを重視します。</p>
+<p><strong>実践例</strong></p>
+<pre class="codehilite"><code>「このまま何もしないと、
+毎月100万円の機会損失が続きます。
+3ヶ月で300万円、1年で1,200万円...
+もったいないと思いませんか？」
+</code></pre>
+
+<h3 id="2">2. 希少性の演出</h3>
+<p><strong>実践例</strong></p>
+<pre class="codehilite"><code>「実は〇〇様の業界は、まだ担当したことがないんです。
+もしご一緒できれば、業界内で独占的に
+我々のノウハウを活用いただけます」
+</code></pre>
+
+<h3 id="3">3. 社会的証明</h3>
+<p><strong>実践例</strong></p>
+<pre class="codehilite"><code>「先週も同じ規模の会社様から
+2社お申し込みいただきました。
+皆さん、同じような課題を感じているようです」
+</code></pre>
+
+<h3 id="4">4. 権威性の活用</h3>
+<p><strong>実践例</strong></p>
+<pre class="codehilite"><code>「この手法は、マーケティングの権威である
+〇〇先生も推奨している方法です。
+実際、大手企業の8割が採用しています」
+</code></pre>
+
+<h3 id="5_1">5. 好意の返報性</h3>
+<p><strong>実践例</strong></p>
+<pre class="codehilite"><code>「〇〇様とはぜひ長くお付き合いしたいので、
+特別に初回は30%オフでご提供します。
+その代わり、成果が出たら
+事例として紹介させてください」
+</code></pre>
+
+<h2 id="-7">最後の一押し - プロが使う7つのクロージング話法</h2>
+<h3 id="1_1">1. 二者択一話法</h3>
+<p>決めるか決めないかではなく、AかBかを選んでもらう。</p>
+<pre class="codehilite"><code>「スタートは来月からと再来月から、
+どちらがよろしいですか？」
+
+「プランAの松コースと、プランBの竹コース、
+どちらがご希望に近いですか？」
+</code></pre>
+
+<h3 id="2_1">2. 仮定話法</h3>
+<p>仮に進めるとしたら、という前提で話を進める。</p>
+<pre class="codehilite"><code>「仮に進めるとしたら、
+いつ頃から始めたいですか？」
+
+「もし導入するとしたら、
+最初に改善したいのはどこですか？」
+</code></pre>
+
+<h3 id="3_1">3. サマリー話法</h3>
+<p>合意事項を整理して、最終確認する。</p>
+<pre class="codehilite"><code>「整理すると、
+・LPの改善で問い合わせ倍増を狙う
+・予算は50万円以内
+・3月までに完成
+ということでよろしいですか？
+でしたら、さっそく進めましょう」
+</code></pre>
+
+<h3 id="4_1">4. 黙秘話法</h3>
+<p>提案後、あえて黙って相手の反応を待つ。</p>
+<pre class="codehilite"><code>営業：「以上が提案内容です」
+（5秒間の沈黙）
+クライアント：「...分かりました。やりましょう」
+</code></pre>
+
+<p>沈黙に耐えられず、つい喋ってしまうと効果が薄れます。</p>
+<h3 id="5_2">5. 限定話法</h3>
+<p>今だけの特別条件を提示する。</p>
+<pre class="codehilite"><code>「通常は前金をいただいていますが、
+〇〇様は信頼できる方なので、
+完成後のお支払いで結構です」
+</code></pre>
+
+<h3 id="6">6. ダメ押し話法</h3>
+<p>ほぼ決まりかけた時に、最後の一押し。</p>
+<pre class="codehilite"><code>「あ、それと大事なことを忘れていました。
+今回ご契約いただければ、
+3ヶ月間の無料サポートをお付けします」
+</code></pre>
+
+<h3 id="7">7. 引き話法</h3>
+<p>あえて一度引いてみる。</p>
+<pre class="codehilite"><code>「...とはいえ、無理に今決めなくても大丈夫です。
+じっくり検討されてください。
+ただ、来月になると繁忙期で...」
+</code></pre>
+
+<h2 id="_11">断られた時の切り返し術</h2>
+<h3 id="_12">「予算がない」への対応</h3>
+<pre class="codehilite"><code>「予算の件、よく分かります。
+でも、これは投資なんです。
+月10万円の投資で月50万円のリターンなら、
+実質的にはプラスですよね？
+
+それに、分割払いもできますし、
+成果が出てからの後払いプランもあります」
+</code></pre>
+
+<h3 id="_13">「もう少し考えたい」への対応</h3>
+<pre class="codehilite"><code>「もちろんです。大切な決断ですから。
+ただ、何か不安な点が残っているのでは？
+遠慮なく聞いてください。
+
+それとも、社内で相談が必要ですか？
+でしたら、説明資料をご用意しましょうか？」
+</code></pre>
+
+<h3 id="_14">「他社と比較したい」への対応</h3>
+<pre class="codehilite"><code>「比較検討は当然です。
+ぜひ他社さんともお話しください。
+
+ただ、比較の際は価格だけでなく、
+・実績の数と質
+・サポート体制
+・長期的な関係性
+も含めて検討してくださいね。
+
+あ、比較しやすいように、
+提案内容を一覧表にまとめましょうか？」
+</code></pre>
+
+<h2 id="_15">関係を継続させる「ネクストアクション」</h2>
+<h3 id="_16">なぜ次回の約束が重要か</h3>
+<p>商談の最後に次のアクションを決めないと、関係が途切れてしまいます。</p>
+<h3 id="_17">効果的なネクストアクションの作り方</h3>
+<p><strong>1. 具体的な日時を決める</strong></p>
+<pre class="codehilite"><code>❌「また連絡します」
+✅「来週の水曜日、同じ時間はいかがですか？」
+</code></pre>
+
+<p><strong>2. 相手にもアクションを求める</strong></p>
+<pre class="codehilite"><code>「次回までに、現在の月間アクセス数を
+教えていただけますか？
+より具体的な提案ができます」
+</code></pre>
+
+<p><strong>3. 価値ある情報を約束する</strong></p>
+<pre class="codehilite"><code>「次回、同業他社の成功事例を
+詳しくお話しします。
+きっと参考になると思います」
+</code></pre>
+
+<h2 id="_18">食い気味の追加提案</h2>
+<h3 id="_19">タイミングが全て</h3>
+<p>相手が前向きになった瞬間を逃さず、次の提案を投げかける。</p>
+<p><strong>実践例</strong></p>
+<pre class="codehilite"><code>クライアント：「じゃあ、LPお願いします」
+営業：「ありがとうございます！
+      あ、そうだ！（食い気味に）
+      LPを作るなら、広告バナーも
+      統一感を持たせた方が効果的です。
+      セットなら20%オフにしますが...」
+</code></pre>
+
+<h3 id="_20">関係性の継続を前提に</h3>
+<pre class="codehilite"><code>「今回のプロジェクトが成功したら、
+次は〇〇もお手伝いさせてください！
+一緒に事業を大きくしていきましょう」
+</code></pre>
+
+<h2 id="_21">クロージング力を高める練習法</h2>
+<h3 id="_22">ロールプレイング</h3>
+<p><strong>練習方法</strong>
+1. 同僚と客役・営業役を交代で
+2. 断り文句への切り返しを練習
+3. 録画して話し方をチェック</p>
+<h3 id="_23">日常での実践</h3>
+<p><strong>日々の訓練</strong>
+- レストランで追加注文を促される時の話法を観察
+- 買い物で店員のクロージングを分析
+- 家族への提案で練習</p>
+<h3 id="_24">成功体験の蓄積</h3>
+<p><strong>小さな成功から始める</strong>
+- まず既存客への追加提案から
+- 断られても次につながる終わり方を
+- 成功パターンを記録・分析</p>
+<h2 id="-_1">まとめ - クロージングは愛である</h2>
+<p>クロージングは「売りつける」ことではありません。<strong>相手の成功を心から願い、決断を助けること</strong>です。</p>
+<p>相手が迷っている時、背中を押してあげる。
+不安がある時、一緒に解決策を考える。
+決断できない時、小さな一歩から始める提案をする。</p>
+<p>これらは全て、相手のことを思う「愛」から生まれる行動です。</p>
+<p><strong>今日から実践すること</strong></p>
+<p>✅ 「検討します」で終わらせず、次のアクションを決める
+✅ 小さなYESを3つ以上もらってから、本題に入る
+✅ 断られても、笑顔で次の提案をする</p>
+<p><strong>覚えておいてほしいこと</strong></p>
+<blockquote>
+<p>クロージングを避ける営業は、
+相手の成功に責任を持たない営業である。</p>
+</blockquote>
+<p>勇気を持って、相手の決断をサポートしましょう。
+その先に、本当の信頼関係が待っています。</p>
+                <!-- 更新リクエスト -->
+                <div class="update-request-minimal">
+                    <p>このページを改善する → <a href="feedback.html">ガイドライン追加/改善</a></p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        // ページ読み込み時にスクロール位置を復元
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedScrollPosition = sessionStorage.getItem('sidebarScrollPosition');
+            if (savedScrollPosition) {
+                const sidebar = document.querySelector('.sidebar-nav');
+                if (sidebar) {
+                    sidebar.scrollTop = parseInt(savedScrollPosition);
+                }
+            }
+        });
+
+        // ページ遷移前にスクロール位置を保存
+        window.addEventListener('beforeunload', function() {
+            const sidebar = document.querySelector('.sidebar-nav');
+            if (sidebar) {
+                sessionStorage.setItem('sidebarScrollPosition', sidebar.scrollTop);
+            }
+        });
+
+        // AIチャットパネルの表示/非表示
+        function toggleAiPanel() {
+            const aiPanel = document.getElementById('aiPanel');
+            const mainContent = document.getElementById('mainContent');
+            const isActive = aiPanel.classList.contains('active');
+            
+            if (isActive) {
+                aiPanel.classList.remove('active');
+                mainContent.classList.remove('with-ai');
+            } else {
+                aiPanel.classList.add('active');
+                mainContent.classList.add('with-ai');
+            }
+        }
+
+        // AI回答データベース
+        const aiResponses = {
+            '納期': {
+                keywords: ['納期', '遅れ', 'スケジュール', '締切'],
+                response: `納期に関するお悩みですね。以下のポイントをご確認ください：
+
+**1. 早期の状況把握**
+- 遅延の可能性を感じたら、すぐに全体スケジュールを確認
+- デザイナーとの進捗確認を密に行う
+
+**2. クライアントへの連絡**
+- 遅延の可能性がある場合は、早めにクライアントに相談
+- 代替案を必ず提示（部分納品、優先順位の調整など）
+
+**3. 対策の実施**
+- 追加リソースの検討
+- スコープの調整提案
+- バッファを含めたリスケジュール
+
+詳細は「トラブルシューティング」のページもご参照ください。`
+            },
+            'デザイナー': {
+                keywords: ['デザイナー', '連携', 'コミュニケーション', 'フィードバック'],
+                response: `デザイナーとの効果的な連携について説明します：
+
+**1. 明確な指示**
+- 要件を具体的に文書化
+- 参考イメージや事例を共有
+- 優先順位を明確に伝える
+
+**2. 定期的なコミュニケーション**
+- 進捗確認のタイミングを事前に決める
+- 質問しやすい環境づくり
+- 感謝の気持ちを忘れずに
+
+**3. フィードバックの方法**
+- 良い点を先に伝える
+- 改善点は具体的に
+- 一緒に解決策を考える姿勢
+
+「コミュニケーションガイド」のページに詳しい情報があります。`
+            },
+            '品質': {
+                keywords: ['品質', 'チェック', 'クオリティ', '確認'],
+                response: `品質チェックの重要ポイントをご紹介します：
+
+**1. チェックリストの活用**
+✅ ブランドガイドラインとの整合性
+✅ 誤字脱字の確認
+✅ 画像の解像度とフォーマット
+✅ リンクの動作確認
+✅ レスポンシブ対応（Webの場合）
+
+**2. 段階的なレビュー**
+- ラフ段階での方向性確認
+- 中間チェックでの詳細確認
+- 最終チェックでの総合確認
+
+**3. クライアント視点**
+- ターゲットユーザーの立場で確認
+- 競合他社との差別化ポイント
+- ビジネス目標との整合性
+
+詳しくは「品質管理」のセクションをご覧ください。`
+            }
+        };
+
+        function findBestResponse(input) {
+            const lowerInput = input.toLowerCase();
+            
+            for (const [key, data] of Object.entries(aiResponses)) {
+                for (const keyword of data.keywords) {
+                    if (lowerInput.includes(keyword)) {
+                        return data.response;
+                    }
+                }
+            }
+            
+            return `ご質問ありがとうございます。「${input}」について、ガイドラインを確認しています。
+
+現在、この質問に対する具体的な回答を準備中です。より具体的な状況をお教えいただけますでしょうか？
+
+また、ガイドライン内の検索機能もぜひご活用ください。`;
+        }
+
+        // AIメッセージ送信
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // ユーザーメッセージを追加
+            addAIMessage(message, 'user');
+            
+            // 入力欄をクリア
+            input.value = '';
+            
+            // ローディング表示
+            addAIMessage('考えています...', 'ai', 'loading');
+            
+            try {
+                // Vercel APIエンドポイント
+                const apiUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:3000/api/chat' 
+                    : 'https://guideline-ai-chat.vercel.app/api/chat-gemini';
+                
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message }),
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API request failed');
+                }
+                
+                const data = await response.json();
+                
+                // ローディングメッセージを削除
+                const messagesDiv = document.getElementById('aiMessages');
+                const loadingMsg = messagesDiv.querySelector('.ai-message.ai:last-child');
+                if (loadingMsg && loadingMsg.textContent.includes('考えています...')) {
+                    loadingMsg.remove();
+                }
+                
+                // AI応答を追加
+                let responseText = data.response;
+                
+                // 関連ページがある場合は追加
+                if (data.relatedPages && data.relatedPages.length > 0) {
+                    responseText += '\n\n**関連ページ:**\n';
+                    data.relatedPages.forEach(page => {
+                        responseText += `- [${page.title}](${page.url}) (${page.category})\n`;
+                    });
+                }
+                
+                addAIMessage(responseText, 'ai');
+                
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // ローディングメッセージを削除
+                const messagesDiv = document.getElementById('aiMessages');
+                const loadingMsg = messagesDiv.querySelector('.ai-message.ai:last-child');
+                if (loadingMsg && loadingMsg.textContent.includes('考えています...')) {
+                    loadingMsg.remove();
+                }
+                
+                // フォールバック: 従来のローカル応答を使用
+                const response = findBestResponse(message);
+                addAIMessage(response + '\n\n*（注: 現在オフラインモードで動作しています）*', 'ai');
+            }
+        }
+
+        function addAIMessage(text, sender, className = '') {
+            const messagesDiv = document.getElementById('aiMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender} ${className}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'ai-message-content';
+            
+            // Markdownリンクを実際のリンクに変換
+            let html = text
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+            
+            contentDiv.innerHTML = html;
+            
+            messageDiv.appendChild(contentDiv);
+            messagesDiv.appendChild(messageDiv);
+            
+            // スクロールを最下部に
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Enterキーで送信
+        document.getElementById('aiInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendAIMessage();
+            }
+        });
+
+        // トグル機能の実装
+        function initializeToggleCategories() {
+            // カテゴリのトグル
+            document.querySelectorAll('.category-title').forEach(title => {
+                // トグルアイコンが既に存在しない場合のみ追加
+                if (!title.querySelector('.toggle-icon')) {
+                    const icon = document.createElement('div');
+                    icon.className = 'toggle-icon';
+                    title.insertBefore(icon, title.firstChild);
+                }
+                
+                title.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const category = title.parentElement;
+                    category.classList.toggle('collapsed');
+                    
+                    // 状態を保存
+                    const categoryName = title.textContent.trim();
+                    const isCollapsed = category.classList.contains('collapsed');
+                    localStorage.setItem(`category-${categoryName}`, isCollapsed);
+                });
+            });
+            
+            // サブカテゴリのトグル
+            document.querySelectorAll('.subcategory-title').forEach(title => {
+                // トグルアイコンが既に存在しない場合のみ追加
+                if (!title.querySelector('.toggle-icon')) {
+                    const icon = document.createElement('div');
+                    icon.className = 'toggle-icon';
+                    title.insertBefore(icon, title.firstChild);
+                }
+                
+                title.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const subcategory = title.parentElement;
+                    subcategory.classList.toggle('collapsed');
+                    
+                    // 状態を保存
+                    const subcategoryName = title.textContent.trim();
+                    const isCollapsed = subcategory.classList.contains('collapsed');
+                    localStorage.setItem(`subcategory-${subcategoryName}`, isCollapsed);
+                });
+            });
+            
+            // 保存された状態を復元（デフォルトは閉じた状態）
+            document.querySelectorAll('.category').forEach(category => {
+                const title = category.querySelector('.category-title');
+                if (title) {
+                    const categoryName = title.textContent.trim();
+                    const savedState = localStorage.getItem(`category-${categoryName}`);
+                    // 保存された状態がない場合（null）はデフォルトで閉じる
+                    // 保存された状態が'true'の場合も閉じる
+                    // 'false'の場合のみ開く
+                    if (savedState !== 'false') {
+                        category.classList.add('collapsed');
+                    }
+                }
+            });
+            
+            document.querySelectorAll('.subcategory').forEach(subcategory => {
+                const title = subcategory.querySelector('.subcategory-title');
+                if (title) {
+                    const subcategoryName = title.textContent.trim();
+                    const isCollapsed = localStorage.getItem(`subcategory-${subcategoryName}`) === 'true';
+                    if (isCollapsed) {
+                        subcategory.classList.add('collapsed');
+                    }
+                }
+            });
+        }
+        
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            // 先にトグル機能を初期化（デフォルト状態を設定）
+            initializeToggleCategories();
+            
+            const currentPage = window.location.pathname.split('/').pop();
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            navItems.forEach(item => {
+                if (item.getAttribute('href') === currentPage) {
+                    item.classList.add('active');
+                    
+                    // アクティブなアイテムが含まれるカテゴリを展開
+                    let parent = item.parentElement;
+                    while (parent) {
+                        if (parent.classList.contains('category') || parent.classList.contains('subcategory')) {
+                            parent.classList.remove('collapsed');
+                            // アクティブなカテゴリの状態を保存
+                            const title = parent.querySelector('.category-title, .subcategory-title');
+                            if (title) {
+                                const name = title.textContent.trim();
+                                const prefix = parent.classList.contains('category') ? 'category' : 'subcategory';
+                                localStorage.setItem(`${prefix}-${name}`, 'false');
+                            }
+                        }
+                        parent = parent.parentElement;
+                        if (parent && parent.classList.contains('sidebar-nav')) {
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // スムーススクロール for アンカーリンク
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // YouTube動画の自動リサイズ
+            function resizeVideos() {
+                const videoEmbeds = document.querySelectorAll('.video-embed iframe');
+                videoEmbeds.forEach(iframe => {
+                    const container = iframe.parentElement;
+                    const containerWidth = container.offsetWidth - 40;
+                    if (containerWidth < 720) {
+                        iframe.style.width = containerWidth + 'px';
+                        iframe.style.height = (containerWidth * 9/16) + 'px';
+                    }
+                });
+            }
+
+            resizeVideos();
+            window.addEventListener('resize', resizeVideos);
+            
+            // Loom動画のアスペクト比を最適化
+            function optimizeLoomVideos() {
+                // Loomの埋め込みコンテナを全て取得
+                const loomContainers = document.querySelectorAll('div[style*="position: relative"][style*="padding-bottom"]');
+                
+                loomContainers.forEach(container => {
+                    const iframe = container.querySelector('iframe[src*="loom.com"]');
+                    if (iframe) {
+                        // コンテナにクラスを追加してスタイリングを改善
+                        container.classList.add('loom-container');
+                        
+                        // インラインスタイルを削除してCSSクラスで制御
+                        container.style.position = '';
+                        container.style.paddingBottom = '';
+                        container.style.height = '';
+                        
+                        // iframeのスタイルも調整
+                        iframe.style.position = '';
+                        iframe.style.top = '';
+                        iframe.style.left = '';
+                        iframe.style.width = '';
+                        iframe.style.height = '';
+                        
+                        // Loomの実際のアスペクト比に応じて調整（多くの場合16:10や4:3）
+                        // デフォルトは16:9だが、実際の動画に応じて自動調整される
+                        container.style.aspectRatio = '16 / 9';
+                    }
+                });
+            }
+            
+            // ページ読み込み時とDOM変更時に実行
+            optimizeLoomVideos();
+            
+            // 動的にコンテンツが追加される場合に対応
+            const observer = new MutationObserver(optimizeLoomVideos);
+            observer.observe(document.body, { childList: true, subtree: true });
+            
+            // モバイルメニューの制御
+            const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            
+            if (mobileMenuToggle) {
+                mobileMenuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                    sidebarOverlay.classList.toggle('active');
+                });
+                
+                sidebarOverlay.addEventListener('click', () => {
+                    sidebar.classList.remove('active');
+                    sidebarOverlay.classList.remove('active');
+                });
+                
+                // サイドバー内のリンクをクリックしたらメニューを閉じる
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        if (window.innerWidth <= 768) {
+                            sidebar.classList.remove('active');
+                            sidebarOverlay.classList.remove('active');
+                        }
+                    });
+                });
+            }
+            
+            // 検索機能の実装
+            const searchBox = document.getElementById('searchBox');
+            const searchResults = document.getElementById('searchResults');
+            let searchIndex = [];
+            
+            // 検索インデックスを読み込む
+            fetch('search-index.json')
+                .then(response => response.json())
+                .then(data => {
+                    searchIndex = data;
+                })
+                .catch(error => {
+                    console.error('検索インデックスの読み込みに失敗しました:', error);
+                });
+            
+            // 検索実行
+            function performSearch(query) {
+                if (!query || query.length < 2 || searchIndex.length === 0) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+                
+                const results = [];
+                const lowerQuery = query.toLowerCase();
+                
+                // 検索インデックスから検索
+                searchIndex.forEach(item => {
+                    const pageTitleMatch = item.pageTitle.toLowerCase().includes(lowerQuery);
+                    const sectionTitleMatch = item.sectionTitle.toLowerCase().includes(lowerQuery);
+                    const contentMatch = item.content.toLowerCase().includes(lowerQuery);
+                    
+                    if (pageTitleMatch || sectionTitleMatch || contentMatch) {
+                        // コンテンツから該当部分を抽出
+                        let excerpt = '';
+                        if (contentMatch) {
+                            const index = item.content.toLowerCase().indexOf(lowerQuery);
+                            const start = Math.max(0, index - 50);
+                            const end = Math.min(item.content.length, index + query.length + 50);
+                            excerpt = '...' + item.content.substring(start, end) + '...';
+                        } else {
+                            excerpt = item.content.substring(0, 150) + '...';
+                        }
+                        
+                        // ハイライト処理
+                        const regex = new RegExp(query, 'gi');
+                        excerpt = excerpt.replace(regex, match => `<span class="search-result-highlight">${match}</span>`);
+                        
+                        // タイトルの構築
+                        let displayTitle = item.pageTitle;
+                        if (item.sectionTitle !== item.pageTitle) {
+                            displayTitle = `${item.pageTitle} > ${item.sectionTitle}`;
+                        }
+                        
+                        results.push({
+                            title: displayTitle,
+                            excerpt: excerpt,
+                            url: item.url,
+                            sectionId: item.sectionId,
+                            category: item.category
+                        });
+                    }
+                });
+                
+                // 重複を除去（同じURLとセクションIDの組み合わせ）
+                const uniqueResults = results.filter((result, index, self) =>
+                    index === self.findIndex((r) => r.url === result.url && r.sectionId === result.sectionId)
+                );
+                
+                displaySearchResults(uniqueResults);
+            }
+            
+            // 検索結果の表示
+            function displaySearchResults(results) {
+                searchResults.innerHTML = '';
+                
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="search-no-results">検索結果が見つかりませんでした</div>';
+                } else {
+                    results.forEach(result => {
+                        const item = document.createElement('div');
+                        item.className = 'search-result-item';
+                        item.innerHTML = `
+                            <div class="search-result-title">${result.title}</div>
+                            ${result.excerpt ? `<div class="search-result-content">${result.excerpt}</div>` : ''}
+                        `;
+                        item.addEventListener('click', () => {
+                            // セクションIDがある場合はアンカーリンクを付加
+                            let targetUrl = result.url;
+                            if (result.sectionId && result.sectionId !== result.url.replace('.html', '')) {
+                                targetUrl = result.url + '#' + result.sectionId;
+                            }
+                            window.location.href = targetUrl;
+                        });
+                        searchResults.appendChild(item);
+                    });
+                }
+                
+                searchResults.classList.add('active');
+            }
+            
+            // 検索イベントの設定
+            let searchTimeout;
+            searchBox.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(e.target.value);
+                }, 300);
+            });
+            
+            // 検索ボックス外をクリックしたら結果を非表示
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.search-container')) {
+                    searchResults.classList.remove('active');
+                }
+            });
+            
+            // ESCキーで検索結果を閉じる
+            searchBox.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    searchResults.classList.remove('active');
+                    searchBox.blur();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

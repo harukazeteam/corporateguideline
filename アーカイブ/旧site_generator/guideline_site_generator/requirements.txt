@@ -1,0 +1,10 @@
+# ガイドライン静的サイト生成ツール - 必要なライブラリ
+
+# Markdownパーサー
+markdown==3.5.1
+
+# HTMLパーサー (オプション - 将来の拡張用)
+beautifulsoup4==4.12.2
+
+# 追加のMarkdown拡張機能
+pymdown-extensions==10.5

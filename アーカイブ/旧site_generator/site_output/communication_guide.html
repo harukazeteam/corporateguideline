@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💬 コミュニケーションガイド | Harukazeガイドライン</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", "Hiragino Sans", "Yu Gothic", Arial, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: #333;
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* メインコンテナ */
+        .main-container {
+            display: flex;
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 260px;
+            padding: 30px 20px;
+            background: #f8f9fa;
+            border-right: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+
+        .sidebar-category {
+            margin-bottom: 30px;
+        }
+
+        .sidebar-category h2 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: block;
+            padding: 8px 12px;
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .sidebar-nav a:hover {
+            background: #e9ecef;
+            color: #0066cc;
+        }
+
+        .sidebar-nav a.active {
+            background: #0066cc;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            max-width: 800px;
+        }
+
+        /* コンテンツスタイル */
+        .main-content h1 {
+            font-size: 32px;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .main-content h2 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            padding-top: 20px;
+        }
+
+        .main-content h3 {
+            font-size: 18px;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        .main-content p {
+            margin-bottom: 20px;
+        }
+
+        .main-content ul, .main-content ol {
+            margin: 0 0 20px 0;
+            padding-left: 30px;
+        }
+
+        .main-content li {
+            margin-bottom: 8px;
+        }
+
+        /* リンク */
+        .main-content a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .main-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* コード */
+        .main-content code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: "SF Mono", Monaco, "Inconsolata", "Fira Code", monospace;
+            font-size: 14px;
+        }
+
+        .main-content pre {
+            background: #f5f5f5;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .main-content pre code {
+            background: none;
+            padding: 0;
+        }
+
+        /* 引用 */
+        .main-content blockquote {
+            border-left: 4px solid #e0e0e0;
+            padding-left: 16px;
+            margin: 20px 0;
+            color: #666;
+        }
+
+        /* 強調 */
+        .main-content strong {
+            font-weight: 600;
+        }
+
+        /* 動画埋め込み */
+        .main-content div[style*="position: relative"] {
+            margin: 30px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* テーブル */
+        .main-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .main-content th, .main-content td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .main-content th {
+            font-weight: 600;
+            background: #f8f8f8;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 20px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .main-content h1 {
+                font-size: 24px;
+            }
+
+            .main-content h2 {
+                font-size: 20px;
+            }
+
+            .main-content h3 {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <h1>Harukazeガイドライン</h1>
+            <p>toB事業 品質管理マニュアル</p>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-category">
+    <h2>基本情報</h2>
+    <ul class="sidebar-nav">
+        <li><a href="introduction.html">はじめに</a></li>
+    </ul>
+</div>
+<div class="sidebar-category">
+    <h2>必須項目</h2>
+    <ul class="sidebar-nav">
+        <li><a href="director_mindset.html">ディレクターの心得</a></li>
+        <li><a href="business_process.html">全体の業務プロセス</a></li>
+        <li><a href="communication_guide.html">コミュニケーションガイド</a></li>
+        <li><a href="troubleshooting.html">代表的なトラブルシューティング</a></li>
+    </ul>
+</div>
+        </aside>
+
+        <main class="main-content">
+            <h1 id="_1">コミュニケーションガイド</h1>
+<h2 id="41">4.1 対クライアントコミュニケーション</h2>
+<h3 id="_2">基本のスタンスとマインドセット</h3>
+<ul>
+<li>「プロジェクトの成功は自分の責任」という当事者意識</li>
+<li>常に先手を打つ姿勢（ネクストアクションの自発的提示）</li>
+<li>「相手がどうすれば一番楽か？」を考えた行動</li>
+</ul>
+<h3 id="_3">報連相（ホウレンソウ）の技術</h3>
+<ul>
+<li>「2割でも過程共有」の徹底</li>
+<li>進捗報告の義務化（何も進んでいない場合も必ず報告）</li>
+<li>ネクストアクションの明確化（誰が・いつまでに・何を）</li>
+<li>コミュニケーションの基本構成</li>
+<li>感謝・謝罪 → 現状報告 → 原因分析 → 具体的な対応策 → 期限</li>
+</ul>
+<h3 id="_4">依頼・提案・フィードバックの品質</h3>
+<ul>
+<li>抽象的な言葉を具体的に翻訳</li>
+<li>常に複数の選択肢と推奨案を提示</li>
+<li>相手が「選ぶだけ」「答えるだけ」の状態を作る</li>
+<li>価格交渉では「価値」で勝負（安易な値引きはNG）</li>
+</ul>
+<h3 id="_5">連絡の仕方の工夫</h3>
+<ul>
+<li>短い用件はLINEに直接箇条書き</li>
+<li>議事録は【決定事項】と【NA】をテキストで抜き出す</li>
+<li>必ず「@名前」でメンション、CCルールの徹底</li>
+</ul>
+<h2 id="42">4.2 対デザイナー/チームメンバーコミュニケーション</h2>
+<h3 id="_6">フィードバックの基本原理</h3>
+<h4 id="4">フィードバックの流れ（4ステップ）</h4>
+<ol>
+<li><strong>攻撃性の排除・ポジティブフィードバック</strong>（褒めから入る）</li>
+<li><strong>具体的なフィードバック</strong>（率直に明言する）</li>
+<li><strong>現在地の共有</strong>（プロジェクト全体での位置づけ）</li>
+<li>
+<p><strong>ネクストアクションの提示</strong>（次の共有での期待値）</p>
+</li>
+<li>
+<p>ボールを最速で返す（デザイナーの苦労を減らす）</p>
+</li>
+<li>大局で見る（ディレクターは俯瞰、デザイナーは具体）</li>
+</ol>
+<h3 id="_7">フィードバックの形式と手法</h3>
+<ul>
+<li><strong>動画フィードバック（Loom）</strong> が最も具体を伝えられる</li>
+<li><strong>テキストフィードバック</strong>（LINE、Slack）</li>
+<li><strong>デザインに直接コメント</strong>（Googleドライブ、Figma）</li>
+</ul>
+<h3 id="3">フィードバック時に見るべき3つの視点</h3>
+<h4 id="1">①デザイン的な視点</h4>
+<ul>
+<li>視認性（読みやすさ、背景との同化チェック）</li>
+<li>4大原則（整列、対比、反復、近接）</li>
+<li>全体の一貫性・統一感</li>
+<li>細部のクオリティ（文字サイズ統一、余白感）</li>
+<li>使いやすさ（顧客視点での理解しやすさ）</li>
+<li>etc...</li>
+</ul>
+<h4 id="2">②ビジネス的な視点</h4>
+<ul>
+<li>訴求の最適性（テキスト内容が目的達成に寄与するか）</li>
+<li>不要な情報の削除（目的達成の阻害要因を排除）</li>
+<li>マーケ導線とのマッチング（前後の流れとの一貫性）</li>
+<li>顧客視点での設計（使いやすく、わかりやすく、心が動くか）</li>
+<li>etc...</li>
+</ul>
+<h4 id="3_1">③プロジェクト視点</h4>
+<ul>
+<li>目的からの脱線チェック</li>
+<li>進捗管理とリカバリー策</li>
+</ul>
+<h3 id="_8">心理的安全性とモチベーション管理</h3>
+<p>モチベーションを持って仕事をしてもらうことで成果が最大化する</p>
+<h4 id="_9">心理的安全性への配慮</h4>
+<ul>
+<li>「制作物に対するFB」であることを明確に</li>
+<li>頑張りを正当に評価</li>
+</ul>
+<h4 id="9">9つの動機づけ要因</h4>
+<ul>
+<li>やらされ感を持たせない依頼の仕方</li>
+<li>内的要因でのモチベート</li>
+<li><strong>9つの要素</strong>：<ul>
+<li>達成感、成長感、自己決定感、</li>
+<li>責任感、人間関係、有意味感、</li>
+<li>有効感、適正な評価、承認感</li>
+</ul>
+</li>
+<li>これらを満たしてあげる</li>
+</ul>
+        </main>
+    </div>
+
+    <script>
+        // アクティブなページをハイライト
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = window.location.pathname.split('/').pop();
+            const navLinks = document.querySelectorAll('.sidebar-nav a');
+            
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPage) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

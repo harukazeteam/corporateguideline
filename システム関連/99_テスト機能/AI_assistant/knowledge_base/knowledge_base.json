@@ -1,0 +1,56 @@
+{
+  "knowledge_base": {
+    "categories": [
+      {
+        "name": "納期管理",
+        "keywords": ["納期", "遅延", "スケジュール", "締切", "遅れ"],
+        "questions": [
+          {
+            "question": "納期が遅れそうな時はどうすればいい？",
+            "answer": "1. 即座に状況を把握し、遅延の原因を特定\n2. クライアントに早めに連絡し、状況を説明\n3. 代替案を提示（部分納品、優先順位の調整など）\n4. リカバリープランを作成し、実行",
+            "related_pages": ["troubleshooting.html", "communication.html"]
+          }
+        ]
+      },
+      {
+        "name": "デザイナー管理",
+        "keywords": ["デザイナー", "アサイン", "フィードバック", "連携"],
+        "questions": [
+          {
+            "question": "デザイナーへの効果的なフィードバック方法は？",
+            "answer": "1. 良い点を先に伝える\n2. 改善点は具体的に指摘\n3. 参考例や代替案を提示\n4. 一緒に解決策を考える姿勢を示す",
+            "related_pages": ["communication.html", "director-mindset.html"]
+          }
+        ]
+      },
+      {
+        "name": "品質管理",
+        "keywords": ["品質", "チェック", "クオリティ", "確認", "レビュー"],
+        "questions": [
+          {
+            "question": "品質チェックで見るべきポイントは？",
+            "answer": "1. ブランドガイドラインとの整合性\n2. 誤字脱字のチェック\n3. デザインの一貫性\n4. 技術的な要件の確認\n5. ユーザビリティの観点",
+            "related_pages": ["work-process.html", "troubleshooting.html"]
+          }
+        ]
+      },
+      {
+        "name": "クライアント対応",
+        "keywords": ["クライアント", "顧客", "要望", "コミュニケーション"],
+        "questions": [
+          {
+            "question": "クライアントの無理な要求への対処法は？",
+            "answer": "1. まず要求の背景を理解する\n2. 実現可能な代替案を提示\n3. リスクと影響を説明\n4. Win-Winの解決策を模索",
+            "related_pages": ["communication.html", "sales-manual.html"]
+          }
+        ]
+      }
+    ],
+    "common_phrases": {
+      "greeting": "こんにちは！Harukazeガイドラインのアシスタントです。",
+      "not_found": "申し訳ございません。その質問に対する回答が見つかりませんでした。",
+      "clarification": "もう少し詳しく教えていただけますか？",
+      "suggestion": "以下の関連ページが参考になるかもしれません："
+    }
+  }
+}
