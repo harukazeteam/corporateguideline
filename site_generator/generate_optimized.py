@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-改良版自動検出型サイト生成ツール
-- 動画時間表示対応
+最適化版サイト生成ツール
+- アニメーション高速化
+- 基本情報の自動展開
+- 動画時間表示
 - サブカテゴリの正しいソート
-- ナビゲーション改善
 """
 
 import os
@@ -16,15 +17,14 @@ import yaml
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-class ImprovedSiteGenerator:
+class OptimizedSiteGenerator:
     def __init__(self, content_dir="../サイトコンテンツ", 
-                 output_dir="../site_output",
+                 output_dir="../test_output",
                  template_dir="_templates"):
         self.content_dir = Path(content_dir)
         self.output_dir = Path(output_dir)
         self.template_dir = Path(template_dir)
         self.pages = []
-        self.navigation_map = {}  # ナビゲーション用のマップ
         
     def extract_frontmatter(self, content):
         """Markdownファイルからフロントマターを抽出"""
@@ -51,12 +51,9 @@ class ImprovedSiteGenerator:
             # アーカイブフォルダ内のファイルはスキップ
             if any(exclude_dir in md_file.parts for exclude_dir in exclude_dirs):
                 continue
-            # index.mdはスキップ
-            if md_file.name == 'index.md':
-                continue
-                
             # 相対パスを取得
             relative_path = md_file.relative_to(self.content_dir)
+            
             
             # ファイル内容を読み込み
             with open(md_file, 'r', encoding='utf-8') as f:
@@ -82,18 +79,7 @@ class ImprovedSiteGenerator:
                 page_info['order'] = order_value if order_value is not None else 999
                 page_info['date'] = frontmatter.get('date', None)
                 page_info['tags'] = frontmatter.get('tags', [])
-                # 動画時間を取得して形式を統一
-                duration = frontmatter.get('duration', None)
-                if duration:
-                    # 数字のみの場合は「分」を追加
-                    if isinstance(duration, (int, float)):
-                        page_info['duration'] = f"{duration}分"
-                    elif isinstance(duration, str) and duration.isdigit():
-                        page_info['duration'] = f"{duration}分"
-                    else:
-                        page_info['duration'] = duration
-                else:
-                    page_info['duration'] = None
+                page_info['duration'] = frontmatter.get('duration', None)  # 動画時間を取得
             else:
                 # フロントマターがない場合は自動推測
                 # 最初のH1タグからタイトルを取得
@@ -120,13 +106,10 @@ class ImprovedSiteGenerator:
         # ページをソート（カテゴリ → サブカテゴリ → 順序）
         self.pages.sort(key=lambda x: (
             self.category_sort_order(x['category']),
-            self.subcategory_sort_order(x['subcategory']) if x['subcategory'] else 999,
+            x['subcategory'] or '',
             x['order'],
             x['filename']
         ))
-        
-        # ナビゲーションマップを構築
-        self.build_navigation_map()
         
         print(f"検出されたMarkdownファイル: {len(self.pages)}件")
     
@@ -136,18 +119,9 @@ class ImprovedSiteGenerator:
             "基本情報": 1,
             "商談マニュアル": 2,
             "その他": 3,
+            "Loom動画": 4
         }
         return order.get(category, 999)
-    
-    def subcategory_sort_order(self, subcategory):
-        """サブカテゴリ名から順序を抽出"""
-        if not subcategory:
-            return 999
-        # サブカテゴリ名の最初の数字を抽出（例: "01_はじめに" → 1）
-        match = re.match(r'^(\d+)', subcategory)
-        if match:
-            return int(match.group(1))
-        return 999
     
     def guess_category(self, relative_path):
         """相対パスからカテゴリを推測"""
@@ -167,8 +141,8 @@ class ImprovedSiteGenerator:
             # 2階層目のディレクトリ名をサブカテゴリとする
             subcategory = parts[1] if len(parts) > 2 else None
             if subcategory:
-                # 数字プレフィックスは残しておく（ソート用）
-                return subcategory
+                # 数字プレフィックスを削除
+                subcategory = re.sub(r'^\d+[_-]', '', subcategory)
             return subcategory
         return None
     
@@ -264,58 +238,6 @@ class ImprovedSiteGenerator:
                 base_name = output_name.replace('.html', '')
                 page['output_name'] = f"{base_name}_{filename_counters[output_name]}.html"
     
-    def calculate_total_duration(self, pages):
-        """ページリストの合計時間を計算"""
-        total_minutes = 0
-        for page in pages:
-            if page.get('duration'):
-                duration = page['duration']
-                # 「分」を削除して数値を抽出
-                if isinstance(duration, str):
-                    match = re.search(r'(\d+)', duration)
-                    if match:
-                        total_minutes += int(match.group(1))
-        
-        if total_minutes > 0:
-            if total_minutes >= 60:
-                hours = total_minutes // 60
-                minutes = total_minutes % 60
-                if minutes > 0:
-                    return f"{hours}時間{minutes}分"
-                else:
-                    return f"{hours}時間"
-            else:
-                return f"{total_minutes}分"
-        return None
-    
-    def build_navigation_map(self):
-        """ナビゲーションマップを構築（サブカテゴリを跨いだナビゲーション）"""
-        self.navigation_map = {}
-        
-        # 基本情報カテゴリ内のページを取得
-        basic_info_pages = [p for p in self.pages if p['category'] == '基本情報']
-        
-        for i, page in enumerate(basic_info_pages):
-            nav = {}
-            
-            # 前のページ
-            if i > 0:
-                prev_page = basic_info_pages[i - 1]
-                nav['prev'] = {
-                    'title': prev_page['title'],
-                    'url': prev_page['output_name']
-                }
-            
-            # 次のページ（サブカテゴリを跨いで）
-            if i < len(basic_info_pages) - 1:
-                next_page = basic_info_pages[i + 1]
-                nav['next'] = {
-                    'title': next_page['title'],
-                    'url': next_page['output_name']
-                }
-            
-            self.navigation_map[page['output_name']] = nav
-    
     def generate_sidebar(self):
         """ページ情報からサイドバーHTMLを生成（動画時間付き）"""
         categories = {}
@@ -336,29 +258,7 @@ class ImprovedSiteGenerator:
                 categories[category]['pages'].append(page)
         
         # サイドバーHTML生成
-        sidebar_html = '''<!-- モバイル用サイドバーヘッダー -->
-<div class="mobile-sidebar-header" style="display: none;">
-    <button class="sidebar-close-btn" id="sidebarCloseBtn">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-    </button>
-    <span style="flex: 1; font-size: 18px; font-weight: 600;">メニュー</span>
-</div>
-<!-- モバイル用検索 -->
-<div class="mobile-sidebar-search" style="display: none;">
-    <input type="text" placeholder="ページを検索..." id="mobileSidebarSearch">
-</div>
-<!-- 通常のサイドバーヘッダー -->
-<div class="sidebar-header desktop-only">
-<a href="index.html" style="text-decoration: none; color: inherit;">
-<h1>Harukazeガイドライン</h1>
-</a>
-<p>法人事業 品質管理マニュアル</p>
-</div>
-<nav class="sidebar-nav">
-<a href="index.html" class="nav-item"><span class="nav-item-text">ホーム</span></a>
-<div class="nav-divider"></div>'''
+        sidebar_html = ''
         
         # カテゴリの表示順序を定義
         category_order = ["基本情報", "商談マニュアル", "その他"]
@@ -370,39 +270,38 @@ class ImprovedSiteGenerator:
             
             cat_data = categories[category]
             
-            # カテゴリのdivを作成（デフォルトで閉じる）
-            sidebar_html += f'<div class="category collapsed">\n'
-            sidebar_html += f'  <div class="category-title">{category}</div>\n'
+            # カテゴリのdivを作成（基本情報はデフォルトで展開しない）
+            collapsed_class = '' if category == '基本情報' else ' collapsed'
+            sidebar_html += f'<div class="category{collapsed_class}">\n'
+            sidebar_html += f'  <div class="category-title"><span class="toggle-icon"></span>{category}</div>\n'
             sidebar_html += f'  <div class="category-content">\n'
             
             # サブカテゴリを順序付きで表示
             if cat_data['subcategories']:
                 # サブカテゴリをソート（番号を考慮）
                 sorted_subcategories = sorted(cat_data['subcategories'].items(), 
-                                             key=lambda x: self.subcategory_sort_order(x[0]))
+                                             key=lambda x: self.extract_subcategory_order(x[0]))
                 
                 for subcategory, pages in sorted_subcategories:
-                    # サブカテゴリ名から番号プレフィックスを削除して表示
-                    display_name = re.sub(r'^\d+[_-]', '', subcategory)
-                    
-                    # サブカテゴリ内の合計時間を計算
-                    total_duration = self.calculate_total_duration(pages)
-                    duration_html = ''
-                    if total_duration:
-                        duration_html = f'<span class="duration-badge">{total_duration}</span>'
-                    
-                    sidebar_html += f'    <div class="subcategory-folder collapsed">\n'
-                    sidebar_html += f'      <div class="subcategory-folder-title"><span class="nav-item-text">{display_name}</span>{duration_html}</div>\n'
+                    # 基本情報のサブカテゴリは展開、それ以外は折りたたむ
+                    folder_collapsed = '' if category == '基本情報' else ' collapsed'
+                    sidebar_html += f'    <div class="subcategory-folder{folder_collapsed}">\n'
+                    sidebar_html += f'      <div class="subcategory-folder-title"><span class="toggle-icon"></span>{subcategory}</div>\n'
                     sidebar_html += f'      <div class="subcategory-folder-content">\n'
                     
                     # ページをソート（orderを考慮）
                     sorted_pages = sorted(pages, key=lambda x: (x['order'], x['filename']))
                     for page in sorted_pages:
+                        # index.mdはスキップ
+                        if page['filename'] == 'index.md':
+                            continue
+                        
                         # 動画時間があれば表示
+                        duration_html = ''
                         if page.get('duration'):
-                            sidebar_html += f'        <a href="{page["output_name"]}" class="nav-item"><span class="nav-item-text">{page["title"]}</span><span class="duration-badge">{page["duration"]}</span></a>\n'
-                        else:
-                            sidebar_html += f'        <a href="{page["output_name"]}" class="nav-item"><span class="nav-item-text">{page["title"]}</span></a>\n'
+                            duration_html = f'<span class="duration-badge">{page["duration"]}</span>'
+                        
+                        sidebar_html += f'        <a href="{page["output_name"]}" class="nav-item">{page["title"]}{duration_html}</a>\n'
                     
                     sidebar_html += f'      </div>\n'
                     sidebar_html += f'    </div>\n'
@@ -411,11 +310,16 @@ class ImprovedSiteGenerator:
             if cat_data['pages']:
                 sorted_pages = sorted(cat_data['pages'], key=lambda x: (x['order'], x['filename']))
                 for page in sorted_pages:
+                    # index.mdはスキップ
+                    if page['filename'] == 'index.md':
+                        continue
+                    
                     # 動画時間があれば表示
+                    duration_html = ''
                     if page.get('duration'):
-                        sidebar_html += f'    <a href="{page["output_name"]}" class="nav-item"><span class="nav-item-text">{page["title"]}</span><span class="duration-badge">{page["duration"]}</span></a>\n'
-                    else:
-                        sidebar_html += f'    <a href="{page["output_name"]}" class="nav-item"><span class="nav-item-text">{page["title"]}</span></a>\n'
+                        duration_html = f'<span class="duration-badge">{page["duration"]}</span>'
+                    
+                    sidebar_html += f'    <a href="{page["output_name"]}" class="nav-item">{page["title"]}{duration_html}</a>\n'
             
             sidebar_html += f'  </div>\n'
             sidebar_html += f'</div>\n'
@@ -426,36 +330,38 @@ class ImprovedSiteGenerator:
                 cat_data = categories[category]
                 
                 sidebar_html += f'<div class="category collapsed">\n'
-                sidebar_html += f'  <div class="category-title">{category}</div>\n'
+                sidebar_html += f'  <div class="category-title"><span class="toggle-icon"></span>{category}</div>\n'
                 sidebar_html += f'  <div class="category-content">\n'
                 
                 # ページをソート
                 sorted_pages = sorted(cat_data['pages'], key=lambda x: (x['order'], x['filename']))
                 for page in sorted_pages:
                     # 動画時間があれば表示
+                    duration_html = ''
                     if page.get('duration'):
-                        sidebar_html += f'    <a href="{page["output_name"]}" class="nav-item"><span class="nav-item-text">{page["title"]}</span><span class="duration-badge">{page["duration"]}</span></a>\n'
-                    else:
-                        sidebar_html += f'    <a href="{page["output_name"]}" class="nav-item"><span class="nav-item-text">{page["title"]}</span></a>\n'
+                        duration_html = f'<span class="duration-badge">{page["duration"]}</span>'
+                    
+                    sidebar_html += f'    <a href="{page["output_name"]}" class="nav-item">{page["title"]}{duration_html}</a>\n'
                 
                 sidebar_html += f'  </div>\n'
                 sidebar_html += f'</div>\n'
         
-        sidebar_html += '</nav>\n'
-        
-        # サイドバーフッター（よくある質問FAQは削除）
-        sidebar_html += '''<div class="sidebar-footer">
-    <button class="footer-link" onclick="toggleAiPanel()">AIチャット</button>
-    <div class="footer-divider"></div>
-    <a href="feedback.html" class="footer-link">ガイドライン追加・改善</a>
-</div>'''
-        
         return sidebar_html
+    
+    def extract_subcategory_order(self, subcategory_name):
+        """サブカテゴリ名から順序を抽出"""
+        match = re.match(r'^(\d+)', subcategory_name)
+        if match:
+            return int(match.group(1))
+        return 999
     
     def generate_pages(self):
         """各ページのHTMLを生成"""
-        # テンプレートを読み込み
-        template_path = self.template_dir / "page_light_with_ai.html"
+        # テンプレートを読み込み（最適化版を使用）
+        template_path = self.template_dir / "page_optimized.html"
+        if not template_path.exists():
+            # フォールバック
+            template_path = self.template_dir / "page_light_with_ai.html"
         
         with open(template_path, 'r', encoding='utf-8') as f:
             template = f.read()
@@ -472,16 +378,21 @@ class ImprovedSiteGenerator:
             md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc'])
             html_content = md.convert(page['content'])
             
-            # ナビゲーションボタンは削除（「次の動画へ進む」ボタンは不要）
-            # if page['category'] == '基本情報' and page['output_name'] in self.navigation_map:
-            #     nav = self.navigation_map[page['output_name']]
-            #     ... (削除)
+            # 動画時間をコンテンツに追加（H1タイトルの横に表示）
+            if page.get('duration'):
+                # H1タグを探して動画時間を追加
+                html_content = re.sub(
+                    r'<h1>([^<]+)</h1>',
+                    f'<h1>\\1 <span class="duration-badge">{page["duration"]}</span></h1>',
+                    html_content,
+                    count=1
+                )
             
             # テンプレートに値を挿入
             page_html = template
             page_html = page_html.replace('{{TITLE}}', page['title'])
             page_html = page_html.replace('{{CONTENT}}', html_content)
-            page_html = page_html.replace('{{SIDEBAR}}', sidebar_html)
+            page_html = page_html.replace('{{SIDEBAR_CONTENT}}', sidebar_html)
             
             # ファイルを保存
             output_path = self.output_dir / page['output_name']
@@ -508,7 +419,7 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
 法人商談における実践的なテクニックや、信頼関係構築の方法をステップバイステップで解説しています。
 
 ### 💬 AIチャット機能
-わからないことがあれば、AIアシスタントにすぐに質問できます。サイドバー下部の「AIチャット」をクリックしてください。
+わからないことがあれば、AIアシスタントにすぐに質問できます。画面右下のチャットボタンをクリックしてください。
 
 ### 📝 フィードバック
 ガイドラインの改善や追加のご要望は、サイドバー下部の「ガイドライン追加・改善」からお寄せください。
@@ -519,8 +430,20 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
 より良いものにしていくために、皆様のフィードバックをお待ちしています。
 '''
         
+        # インデックスページを生成
+        page_info = {
+            'title': 'Harukazeガイドライン',
+            'content': index_content,
+            'output_name': 'index.html',
+            'category': '',
+            'subcategory': None,
+            'order': 0
+        }
+        
         # テンプレートを読み込み
-        template_path = self.template_dir / "page_light_with_ai.html"
+        template_path = self.template_dir / "page_optimized.html"
+        if not template_path.exists():
+            template_path = self.template_dir / "page_light_with_ai.html"
         
         with open(template_path, 'r', encoding='utf-8') as f:
             template = f.read()
@@ -534,12 +457,12 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
         
         # テンプレートに値を挿入
         page_html = template
-        page_html = page_html.replace('{{TITLE}}', 'Harukazeガイドライン')
+        page_html = page_html.replace('{{TITLE}}', page_info['title'])
         page_html = page_html.replace('{{CONTENT}}', html_content)
-        page_html = page_html.replace('{{SIDEBAR}}', sidebar_html)
+        page_html = page_html.replace('{{SIDEBAR_CONTENT}}', sidebar_html)
         
         # ファイルを保存
-        output_path = self.output_dir / 'index.html'
+        output_path = self.output_dir / page_info['output_name']
         with open(output_path, 'w', encoding='utf-8') as f:
             f.write(page_html)
         
@@ -554,31 +477,17 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
             md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc'])
             html_content = md.convert(page['content'])
             soup = BeautifulSoup(html_content, 'html.parser')
+            text_content = soup.get_text()
             
-            # 全セクションを取得
-            for section in soup.find_all(['h1', 'h2', 'h3']):
-                section_title = section.get_text()
-                section_id = section.get('id', '')
-                
-                # セクションの後続コンテンツを取得
-                content_parts = []
-                for sibling in section.find_next_siblings():
-                    if sibling.name in ['h1', 'h2', 'h3']:
-                        break
-                    content_parts.append(sibling.get_text())
-                
-                content_text = ' '.join(content_parts)[:500]
-                
-                # 検索インデックスエントリを作成
-                entry = {
-                    'pageTitle': page['title'],
-                    'sectionTitle': section_title,
-                    'sectionId': section_id,
-                    'url': page['output_name'],
-                    'content': content_text,
-                    'category': page['category']
-                }
-                search_index.append(entry)
+            # 検索インデックスエントリを作成
+            entry = {
+                'title': page['title'],
+                'url': page['output_name'],
+                'content': text_content[:500],  # 最初の500文字
+                'category': page['category'],
+                'subcategory': page.get('subcategory', '')
+            }
+            search_index.append(entry)
         
         # JSONファイルとして保存
         output_path = self.output_dir / 'search-index.json'
@@ -590,7 +499,7 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
     def run(self):
         """サイト生成の実行"""
         print("=" * 50)
-        print("改良版サイト生成を開始")
+        print("最適化版サイト生成を開始")
         print("=" * 50)
         
         # Markdownファイルをスキャン
@@ -614,5 +523,5 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
         print("=" * 50)
 
 if __name__ == "__main__":
-    generator = ImprovedSiteGenerator()
+    generator = OptimizedSiteGenerator()
     generator.run()

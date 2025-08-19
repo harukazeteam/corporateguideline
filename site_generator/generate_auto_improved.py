@@ -18,7 +18,7 @@ from bs4 import BeautifulSoup
 
 class ImprovedSiteGenerator:
     def __init__(self, content_dir="../サイトコンテンツ", 
-                 output_dir="../site_output",
+                 output_dir="../test_output",
                  template_dir="_templates"):
         self.content_dir = Path(content_dir)
         self.output_dir = Path(output_dir)
@@ -454,8 +454,10 @@ class ImprovedSiteGenerator:
     
     def generate_pages(self):
         """各ページのHTMLを生成"""
-        # テンプレートを読み込み
-        template_path = self.template_dir / "page_light_with_ai.html"
+        # テンプレートを読み込み（改良版を使用）
+        template_path = self.template_dir / "page_light_with_ai_improved.html"
+        if not template_path.exists():
+            template_path = self.template_dir / "page_light_with_ai.html"
         
         with open(template_path, 'r', encoding='utf-8') as f:
             template = f.read()
@@ -520,7 +522,9 @@ Harukazeの理念、ディレクターの心得、業務プロセスなど、ま
 '''
         
         # テンプレートを読み込み
-        template_path = self.template_dir / "page_light_with_ai.html"
+        template_path = self.template_dir / "page_light_with_ai_improved.html"
+        if not template_path.exists():
+            template_path = self.template_dir / "page_light_with_ai.html"
         
         with open(template_path, 'r', encoding='utf-8') as f:
             template = f.read()

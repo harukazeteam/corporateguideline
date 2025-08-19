@@ -23,6 +23,8 @@
             --sidebar-hover: #e8ecf0;
             --ai-bg: #f0f7ff;
             --ai-border: #3498db;
+            --duration-badge-bg: #e3f2fd;
+            --duration-badge-text: #1976d2;
         }
 
         * {
@@ -56,7 +58,7 @@
             top: 60px; /* ヘッダーの下に配置 */
             z-index: 100;
             overflow-y: auto;
-            transition: transform 0.3s ease;
+            transition: transform 0.15s ease; /* 高速化 */
         }
 
         /* AIチャットパネル */
@@ -70,7 +72,7 @@
             display: none;
             flex-direction: column;
             z-index: 99;
-            transition: all 0.3s ease;
+            transition: all 0.15s ease; /* 高速化 */
         }
 
         .ai-panel.active {
@@ -105,7 +107,7 @@
             align-items: center;
             justify-content: center;
             border-radius: 4px;
-            transition: all 0.2s;
+            transition: all 0.1s; /* 高速化 */
         }
 
         .ai-close-btn:hover {
@@ -170,7 +172,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
-            transition: background 0.2s;
+            transition: background 0.1s; /* 高速化 */
         }
 
         .ai-send-btn:hover {
@@ -199,7 +201,7 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: color 0.2s, background-color 0.2s;
+            transition: color 0.1s, background-color 0.1s; /* 高速化 */
             cursor: pointer;
             background: none;
             border: none;
@@ -210,7 +212,7 @@
 
         .footer-link:hover {
             color: var(--accent);
-            background-color: var(--hover-bg);
+            background-color: var(--sidebar-hover);
         }
 
         .footer-divider {
@@ -271,7 +273,7 @@
             display: flex;
             align-items: center;
             user-select: none;
-            transition: all 0.2s ease;
+            transition: all 0.1s ease; /* 高速化 */
         }
         
         .category-title:hover {
@@ -286,7 +288,7 @@
             /* デフォルト: 右向き三角形（閉じた状態） */
             border-width: 5px 0 5px 8px;
             border-color: transparent transparent transparent var(--text-secondary);
-            transition: transform 0.2s ease;
+            transition: transform 0.1s ease; /* 高速化 */
             flex-shrink: 0;
             margin-right: 8px;
         }
@@ -308,12 +310,12 @@
         .category-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.15s ease-out; /* 高速化 */
         }
         
         /* 明示的に開いた状態のスタイル */
         .category:not(.collapsed) .category-content {
-            max-height: 1000px;
+            max-height: 2000px;
         }
         
         /* サブカテゴリ */
@@ -332,7 +334,7 @@
             align-items: center;
             justify-content: space-between;
             user-select: none;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease; /* 高速化 */
         }
         
         .subcategory-title:hover {
@@ -343,7 +345,7 @@
         .subcategory-title .toggle-icon {
             width: 12px;
             height: 12px;
-            transition: transform 0.3s ease;
+            transition: transform 0.15s ease; /* 高速化 */
             flex-shrink: 0;
         }
         
@@ -354,7 +356,7 @@
         .subcategory-content {
             max-height: 500px;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.15s ease-out; /* 高速化 */
         }
         
         .subcategory.collapsed .subcategory-content {
@@ -366,23 +368,50 @@
             padding: 8px 24px 8px 32px;
         }
 
+        /* ナビゲーションアイテム（動画時間バッジ対応） */
         .nav-item {
-            display: block;
+            display: flex;
+            align-items: center;
             padding: 8px 24px 8px 32px;
             color: var(--text-primary);
             text-decoration: none;
             font-size: 14px;
             border-left: 3px solid transparent;
-            transition: all 0.15s ease;
-            white-space: nowrap;
+            transition: all 0.1s ease; /* 高速化 */
+            position: relative;
+        }
+        
+        .nav-item-text {
+            flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
+            white-space: nowrap;
+            padding-right: 8px;
+        }
+        
+        .duration-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            background: var(--duration-badge-bg);
+            color: var(--duration-badge-text);
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+            margin-left: auto;
         }
 
         .nav-item:hover {
             background: var(--sidebar-hover);
             border-left-color: var(--accent);
             color: var(--accent);
+        }
+        
+        .nav-item:hover .duration-badge {
+            background: var(--accent);
+            color: white;
         }
 
         .nav-item.active {
@@ -434,7 +463,7 @@
             border-style: solid;
             border-width: 5px 0 5px 8px;
             border-color: transparent transparent transparent var(--text-secondary);
-            transition: transform 0.2s ease;
+            transition: transform 0.1s ease; /* 高速化 */
         }
         
         .nav-item-expandable.expanded .nav-item.with-toggle::after {
@@ -444,7 +473,7 @@
         .nav-item-children {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.15s ease-out; /* 高速化 */
         }
         
         .nav-item-expandable.expanded .nav-item-children {
@@ -487,7 +516,7 @@
             display: flex;
             align-items: center;
             user-select: none;
-            transition: all 0.2s ease;
+            transition: all 0.1s ease; /* 高速化 */
         }
         
         .subcategory-folder-title:hover {
@@ -502,7 +531,7 @@
             /* デフォルト: 右向き三角形（閉じた状態） */
             border-width: 5px 0 5px 8px;
             border-color: transparent transparent transparent var(--text-secondary);
-            transition: transform 0.2s ease;
+            transition: transform 0.1s ease; /* 高速化 */
             flex-shrink: 0;
             margin-right: 8px;
         }
@@ -519,11 +548,11 @@
         .subcategory-folder-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            transition: max-height 0.15s ease-out; /* 高速化 */
         }
         
         .subcategory-folder:not(.collapsed) .subcategory-folder-content {
-            max-height: 1000px;
+            max-height: 1500px;
         }
         
         .subcategory-folder .nav-item {
@@ -571,7 +600,7 @@
             display: flex;
             flex-direction: column;
             min-height: calc(100vh - 60px);
-            transition: margin-left 0.3s ease;
+            transition: margin-left 0.15s ease; /* 高速化 */
         }
 
         .main-content.with-ai {
@@ -602,7 +631,7 @@
             font-size: 14px;
             background: var(--bg-secondary);
             color: var(--text-primary);
-            transition: all 0.2s ease;
+            transition: all 0.1s ease; /* 高速化 */
         }
         
         .search-box:focus {
@@ -645,7 +674,7 @@
             padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             cursor: pointer;
-            transition: background 0.15s ease;
+            transition: background 0.1s ease; /* 高速化 */
         }
         
         .search-result-item:hover {
@@ -754,7 +783,7 @@
         .content-body a {
             color: var(--accent);
             text-decoration: none;
-            transition: color 0.2s ease;
+            transition: color 0.1s ease; /* 高速化 */
         }
 
         .content-body a:hover {
@@ -1103,7 +1132,7 @@
                 height: 100%;
                 background: var(--sidebar-bg);
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
+                transition: transform 0.15s ease; /* 高速化 */
                 z-index: 1001;
                 overflow-y: auto;
                 display: flex;
@@ -1220,7 +1249,7 @@
                 z-index: 1000;
                 display: none;
                 opacity: 0;
-                transition: opacity 0.3s ease;
+                transition: opacity 0.15s ease; /* 高速化 */
             }
             
             .sidebar-overlay.active {
@@ -1400,88 +1429,87 @@
 <p>法人事業 品質管理マニュアル</p>
 </div>
 <nav class="sidebar-nav">
-<a href="index.html" class="nav-item">ホーム</a>
-<div class="nav-divider"></div>
-<div class="category collapsed">
-<div class="category-title">基本情報</div>
-<div class="category-content">
-<div class="subcategory-folder collapsed">
-<div class="subcategory-folder-title">はじめに</div>
-<div class="subcategory-folder-content">
-<a href="guideline_why.html" class="nav-item">このガイドラインの目的</a>
-<a href="vision.html" class="nav-item">Harukazeが目指す世界</a>
-<a href="page_03_3.html" class="nav-item">Harukazeの理念</a>
-<a href="page_04_3.html" class="nav-item">Harukazeから提供できること</a>
-<a href="page_05_2.html" class="nav-item">このガイドラインの活用法</a>
-</div>
-</div>
-<div class="subcategory-folder collapsed">
-<div class="subcategory-folder-title">コミュニケーションガイド</div>
-<div class="subcategory-folder-content">
-<a href="communication_guide_1.html" class="nav-item">対クライアントコミュニケーションガイド</a>
-<a href="communication_guide_2.html" class="nav-item">対チームメンバーコミュニケーションガイド</a>
-</div>
-</div>
-<div class="subcategory-folder collapsed">
-<div class="subcategory-folder-title">ディレクターの心得</div>
-<div class="subcategory-folder-content">
-<a href="page_01_1.html" class="nav-item">全体像におけるディレクターの位置付け</a>
-<a href="page_02_1.html" class="nav-item">主要な当事者領域・責任範囲</a>
-<a href="page_03_1.html" class="nav-item">何を大事に行動して欲しいか</a>
-<a href="page_04_1.html" class="nav-item">Harukaze 5バリューの実践</a>
-</div>
-</div>
-<div class="subcategory-folder collapsed">
-<div class="subcategory-folder-title">代表的なトラブルシューティング</div>
-<div class="subcategory-folder-content">
-<a href="page_01_3.html" class="nav-item">納期が遅れそうな時</a>
-<a href="page_02_3.html" class="nav-item">品質問題：基本的なミスの連発</a>
-<a href="page_03_4.html" class="nav-item">要件が変わってしまった</a>
-<a href="page_04_4.html" class="nav-item">コミュニケーション問題</a>
-</div>
-</div>
-<div class="subcategory-folder collapsed">
-<div class="subcategory-folder-title">全体の業務プロセス</div>
-<div class="subcategory-folder-content">
-<a href="page_01_2.html" class="nav-item">前提問い合わせフェーズ</a>
-<a href="page_02_2.html" class="nav-item">ヒアリング、提案、見積もりフェーズ</a>
-<a href="page_03_2.html" class="nav-item">受注、契約フェーズ</a>
-<a href="page_04_2.html" class="nav-item">チーム結成フェーズ</a>
-<a href="page_05_1.html" class="nav-item">プロジェクト始動、制作フェーズ</a>
-<a href="page_06.html" class="nav-item">納品フェーズ</a>
-<a href="page_07.html" class="nav-item">請求支払いフェーズ</a>
-<a href="page_08.html" class="nav-item">振り返りフェーズ</a>
-</div>
-</div>
-</div>
-</div>
-<div class="category collapsed">
-<div class="category-title">商談マニュアル</div>
-<div class="category-content">
-<a href="page_10.html" class="nav-item">法人商談の全体像</a>
-<a href="page_11.html" class="nav-item">法人商談の心得</a>
-<a href="page_12.html" class="nav-item">信頼関係の構築テクニック</a>
-<a href="page_13.html" class="nav-item">ヒアリングマスター講座</a>
-<a href="page_14.html" class="nav-item">提案力を高める実践テクニック</a>
-<a href="page_15.html" class="nav-item">クロージング成功の秘訣</a>
-<a href="page_16.html" class="nav-item">商材別の攻略法</a>
-<a href="page_17.html" class="nav-item">難易度別の対処法</a>
-</div>
+<a href="index.html" class="nav-item"><span class="nav-item-text">ホーム</span></a>
+<div class="nav-divider"></div><div class="category collapsed">
+  <div class="category-title">基本情報</div>
+  <div class="category-content">
+    <div class="subcategory-folder collapsed">
+      <div class="subcategory-folder-title"><span class="nav-item-text">はじめに</span><span class="duration-badge">22分</span></div>
+      <div class="subcategory-folder-content">
+        <a href="guideline_why.html" class="nav-item"><span class="nav-item-text">このガイドラインの目的</span><span class="duration-badge">2分</span></a>
+        <a href="vision.html" class="nav-item"><span class="nav-item-text">Harukazeが目指す世界</span><span class="duration-badge">3分</span></a>
+        <a href="page_03_3.html" class="nav-item"><span class="nav-item-text">Harukazeの理念</span><span class="duration-badge">10分</span></a>
+        <a href="page_04_3.html" class="nav-item"><span class="nav-item-text">Harukazeから提供できること</span><span class="duration-badge">3分</span></a>
+        <a href="page_05_2.html" class="nav-item"><span class="nav-item-text">このガイドラインの活用法</span><span class="duration-badge">4分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder collapsed">
+      <div class="subcategory-folder-title"><span class="nav-item-text">ディレクターの心得</span><span class="duration-badge">21分</span></div>
+      <div class="subcategory-folder-content">
+        <a href="page_01_1.html" class="nav-item"><span class="nav-item-text">全体像におけるディレクターの位置付け</span><span class="duration-badge">4分</span></a>
+        <a href="page_02_1.html" class="nav-item"><span class="nav-item-text">主要な当事者領域・責任範囲</span><span class="duration-badge">3分</span></a>
+        <a href="page_03_1.html" class="nav-item"><span class="nav-item-text">何を大事に行動して欲しいか</span><span class="duration-badge">9分</span></a>
+        <a href="page_04_1.html" class="nav-item"><span class="nav-item-text">Harukaze 5バリューの実践</span><span class="duration-badge">5分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder collapsed">
+      <div class="subcategory-folder-title"><span class="nav-item-text">全体の業務プロセス</span><span class="duration-badge">21分</span></div>
+      <div class="subcategory-folder-content">
+        <a href="page_01_2.html" class="nav-item"><span class="nav-item-text">前提問い合わせフェーズ</span><span class="duration-badge">3分</span></a>
+        <a href="page_02_2.html" class="nav-item"><span class="nav-item-text">ヒアリング、提案、見積もりフェーズ</span><span class="duration-badge">7分</span></a>
+        <a href="page_03_2.html" class="nav-item"><span class="nav-item-text">受注、契約フェーズ</span><span class="duration-badge">1分</span></a>
+        <a href="page_04_2.html" class="nav-item"><span class="nav-item-text">チーム結成フェーズ</span><span class="duration-badge">3分</span></a>
+        <a href="page_05_1.html" class="nav-item"><span class="nav-item-text">プロジェクト始動、制作フェーズ</span><span class="duration-badge">4分</span></a>
+        <a href="page_06.html" class="nav-item"><span class="nav-item-text">納品フェーズ</span><span class="duration-badge">1分</span></a>
+        <a href="page_07.html" class="nav-item"><span class="nav-item-text">請求支払いフェーズ</span><span class="duration-badge">1分</span></a>
+        <a href="page_08.html" class="nav-item"><span class="nav-item-text">振り返りフェーズ</span><span class="duration-badge">1分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder collapsed">
+      <div class="subcategory-folder-title"><span class="nav-item-text">コミュニケーションガイド</span><span class="duration-badge">29分</span></div>
+      <div class="subcategory-folder-content">
+        <a href="communication_guide_1.html" class="nav-item"><span class="nav-item-text">対クライアントコミュニケーションガイド</span><span class="duration-badge">17分</span></a>
+        <a href="communication_guide_2.html" class="nav-item"><span class="nav-item-text">対チームメンバーコミュニケーションガイド</span><span class="duration-badge">12分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder collapsed">
+      <div class="subcategory-folder-title"><span class="nav-item-text">代表的なトラブルシューティング</span><span class="duration-badge">8分</span></div>
+      <div class="subcategory-folder-content">
+        <a href="page_01_3.html" class="nav-item"><span class="nav-item-text">納期が遅れそうな時</span><span class="duration-badge">3分</span></a>
+        <a href="page_02_3.html" class="nav-item"><span class="nav-item-text">品質問題：基本的なミスの連発</span><span class="duration-badge">2分</span></a>
+        <a href="page_03_4.html" class="nav-item"><span class="nav-item-text">要件が変わってしまった</span><span class="duration-badge">2分</span></a>
+        <a href="page_04_4.html" class="nav-item"><span class="nav-item-text">コミュニケーション問題</span><span class="duration-badge">1分</span></a>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="category collapsed">
-<div class="category-title">その他</div>
-<div class="category-content">
-<a href="ai-assistant.html" class="nav-item">AIチャット</a>
-<a href="faq.html" class="nav-item">よくある質問（FAQ）</a>
-<a href="feedback.html" class="nav-item">ガイドライン追加/改善</a>
-<a href="improvement_cases.html" class="nav-item">実践改善事例集</a>
+  <div class="category-title">商談マニュアル</div>
+  <div class="category-content">
+    <a href="page_10.html" class="nav-item"><span class="nav-item-text">法人商談の全体像</span></a>
+    <a href="page_11.html" class="nav-item"><span class="nav-item-text">法人商談の心得</span></a>
+    <a href="page_12.html" class="nav-item"><span class="nav-item-text">信頼関係の構築テクニック</span></a>
+    <a href="page_13.html" class="nav-item"><span class="nav-item-text">ヒアリングマスター講座</span></a>
+    <a href="page_14.html" class="nav-item"><span class="nav-item-text">提案力を高める実践テクニック</span></a>
+    <a href="page_15.html" class="nav-item"><span class="nav-item-text">クロージング成功の秘訣</span></a>
+    <a href="page_16.html" class="nav-item"><span class="nav-item-text">商材別の攻略法</span></a>
+    <a href="page_17.html" class="nav-item"><span class="nav-item-text">難易度別の対処法</span></a>
+  </div>
 </div>
+<div class="category collapsed">
+  <div class="category-title">その他</div>
+  <div class="category-content">
+    <a href="ai-assistant.html" class="nav-item"><span class="nav-item-text">AIチャット（テスト版）</span></a>
+    <a href="faq.html" class="nav-item"><span class="nav-item-text">よくある質問（FAQ）</span></a>
+    <a href="feedback.html" class="nav-item"><span class="nav-item-text">ガイドライン追加/改善</span></a>
+    <a href="improvement_cases.html" class="nav-item"><span class="nav-item-text">実践改善事例集</span></a>
+  </div>
 </div>
 </nav>
 <div class="sidebar-footer">
-    <button class="footer-link" onclick="toggleAiPanel(); event.stopPropagation();">AIチャット</button>
+    <button class="footer-link" onclick="toggleAiPanel()">AIチャット</button>
     <div class="footer-divider"></div>
-    <a href="feedback.html" class="footer-link">ガイドライン改善提案</a>
+    <a href="feedback.html" class="footer-link">ガイドライン追加・改善</a>
 </div>
         </div>
         
@@ -1508,70 +1536,71 @@
         
         <main class="main-content" id="mainContent">
             <div class="content-body">
-                <h1 class="page-title">ヒアリング、提案、見積もりフェーズ</h1>
-
+                <h1 id="_1">ヒアリング、提案、見積もりフェーズ</h1>
 <h2 id="7">動画で理解する（7分）</h2>
-<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe allowfullscreen="" frameborder="0" mozallowfullscreen="" src="https://www.loom.com/share/b0d76b6b7edd49b583d5330b11723134?sid=1cb55196-40ab-443f-835c-6fd1078292bb" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" webkitallowfullscreen=""></iframe></div>
+<div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/share/b0d76b6b7edd49b583d5330b11723134?sid=1cb55196-40ab-443f-835c-6fd1078292bb" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
 <div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-<a href="01_前提問い合わせフェーズ.html" style="color: #007cba; text-decoration: none;">← 前へ</a>
-<span>2/8</span>
-<a href="03_受注、契約フェーズ.html" style="color: #007cba; text-decoration: none;">次へ →</a>
+  <a href="01_前提問い合わせフェーズ.html" style="color: #007cba; text-decoration: none;">← 前へ</a>
+  <span>2/8</span>
+  <a href="03_受注、契約フェーズ.html" style="color: #007cba; text-decoration: none;">次へ →</a>
 </div>
+
 <h2 id="_2">内容</h2>
 <h3 id="_3">ヒアリングの事前準備</h3>
-<p><strong>クライアントリサーチのポイント：</strong><br/>
-- 企業の背景（業界、事業内容）<br/>
-- ホームページでの情報収集（資本金、代表者名）<br/>
-- 大企業の場合：資本関係、企業歴史<br/>
+<p><strong>クライアントリサーチのポイント：</strong>
+- 企業の背景（業界、事業内容）
+- ホームページでの情報収集（資本金、代表者名）
+- 大企業の場合：資本関係、企業歴史
 - 事前情報を頭に入れておく</p>
 <h3 id="_4">ヒアリングのアプローチパターン</h3>
-<p><strong>1. シンプルヒアリング</strong><br/>
-- 基本的な要件を聞き取るアプローチ<br/>
+<p><strong>1. シンプルヒアリング</strong>
+- 基本的な要件を聞き取るアプローチ
 - 「こういうものですね」と確認するスタイル</p>
-<p><strong>2. 提案型ヒアリング</strong><br/>
-- 確実に受注したい案件の場合<br/>
-- 要件がまとまっていない段階から仮の提案書を作成<br/>
+<p><strong>2. 提案型ヒアリング</strong>
+- 確実に受注したい案件の場合
+- 要件がまとまっていない段階から仮の提案書を作成
 - テキスト情報だけでも地体調子を超える為の提案</p>
 <h3 id="_5">ヒアリングの本質：「相談」としてのアプローチ</h3>
-<p><strong>重要なマインドセット：</strong><br/>
-- ヒアリングは「相談」である<br/>
-- この時点で受注できるかどうかが決まる<br/>
+<p><strong>重要なマインドセット：</strong>
+- ヒアリングは「相談」である
+- この時点で受注できるかどうかが決まる
 - 形式的なシートに基づいたヒアリングでは適切ではない</p>
-<p><strong>深掘りアプローチ：</strong><br/>
-- 相手の課題や悩みを深掘り<br/>
-- クライアント自身も自覚できていない悩みを発見<br/>
+<p><strong>深掘りアプローチ：</strong>
+- 相手の課題や悩みを深掘り
+- クライアント自身も自覚できていない悩みを発見
 - そこに対する解決策を提案してクロージングにつなげる</p>
 <h3 id="_6">機能的ヒアリングのポイント</h3>
-<p><strong>今回の制作物に関する詳細：</strong><br/>
-- どのようなデザインを作りたいか<br/>
+<p><strong>今回の制作物に関する詳細：</strong>
+- どのようなデザインを作りたいか
 - 具体的な機能や要件</p>
-<p><strong>将来を見据えたヒアリング：</strong><br/>
-- 例：SNSヘッダー1枚の制作でも、将来的にLP、ホームページ、ロゴ、スライド等の展開可能性を考慮<br/>
-- 他の事業状況や全体像まで聞いておく<br/>
+<p><strong>将来を見据えたヒアリング：</strong>
+- 例：SNSヘッダー1枚の制作でも、将来的にLP、ホームページ、ロゴ、スライド等の展開可能性を考慮
+- 他の事業状況や全体像まで聞いておく
 - プロジェクト開始後はゆっくり時間を取って聞く機会がないため</p>
 <h3 id="_7">将来の提案につなげる仕掛け</h3>
-<p><strong>初回ヒアリングで伝えるべきこと：</strong><br/>
-- 「申し訳ございませんが、デザインを通じていろんなところでお手伝いしたいと思っております」<br/>
-- 「案件進行する中で、こういうところがいいなと思ったら、全然見ていただいてからやるかやらないか決めることもできます」<br/>
+<p><strong>初回ヒアリングで伝えるべきこと：</strong>
+- 「申し訳ございませんが、デザインを通じていろんなところでお手伝いしたいと思っております」
+- 「案件進行する中で、こういうところがいいなと思ったら、全然見ていただいてからやるかやらないか決めることもできます」
 - 将来的な提案の可能性を示唆</p>
 <h3 id="_8">ミーティング後のフォロー</h3>
-<p><strong>議事録作成：</strong><br/>
-- ミーティング終了後に必ず議事録を作成<br/>
+<p><strong>議事録作成：</strong>
+- ミーティング終了後に必ず議事録を作成
 - アジェンダを事前に用意しておく</p>
-<p><strong>提案書作成：</strong><br/>
-- 必ずしも詳細な提案書でなくても良い<br/>
-- リサーチ結果や仮説を軽くまとめるだけでも効果的<br/>
+<p><strong>提案書作成：</strong>
+- 必ずしも詳細な提案書でなくても良い
+- リサーチ結果や仮説を軽くまとめるだけでも効果的
 - クライアントにとって嬉しいサプライズとなる</p>
 <h3 id="_9">見積もり作成の重要ポイント</h3>
-<p><strong>タイミング：</strong><br/>
-- ミーティング中におおよその価格帯を伝える（数万円〜数十万円等）<br/>
-- 理想的には当日中に見積もり書を作成<br/>
+<p><strong>タイミング：</strong>
+- ミーティング中におおよその価格帯を伝える（数万円〜数十万円等）
+- 理想的には当日中に見積もり書を作成
 - 最遅で3日以内に提出</p>
-<p><strong>見積もり書の目的：</strong><br/>
-1. <strong>透明性の確保</strong><br/>
-   - ウェブサイト作成の裏側にある作業を明確化<br/>
-   - トップページ、下層ページ、PC版・SP版デザイン<br/>
-   - グローバルメニュー、必要機能、実装作業<br/>
+<p><strong>見積もり書の目的：</strong>
+1. <strong>透明性の確保</strong>
+   - ウェブサイト作成の裏側にある作業を明確化
+   - トップページ、下層ページ、PC版・SP版デザイン
+   - グローバルメニュー、必要機能、実装作業
    - HTMLマークアップ、システム連携、サーバー・ドメイン設定</p>
 <ol>
 <li><strong>価格と作業の関係性明示</strong></li>
@@ -1585,22 +1614,10 @@
 <li>契約の一歩手前の資料としての位置づけ</li>
 <li>見積もり書の内容や項目分けが受注に大きな影響を与える</li>
 </ol>
-<hr/>
+<hr />
 <div style="text-align: center; margin-top: 40px;">
-<a href="03_受注、契約フェーズ.html" style="background: #007cba; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">次の動画へ →</a>
+  <a href="03_受注、契約フェーズ.html" style="background: #007cba; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;">次の動画へ →</a>
 </div>
-<p>0:00 えー、ツイエヒアリングテーアンですねえー、余計ヒアリングであったりとか必要に応じて、えー、テーアンションの作成みたいなものもしますが実際にはここでにって調整をしたものが実施されるとかズームがじゃあ一週間後にズームしましょうってなったらその一週間後のズームのフェーズになります。この段階では、ある程度、その敗体であったりとか、その業界であったりとか、ないしはそのクライアントに関するというのは、ホンピッシとかに抱いて、資本金とか、対策者の名前とか、ある程度大きな企業だったら、どこの資本関係があるのかとか、どういうふうな歴史をたどってきているのかとか、そういうものがあったりするので、そこは必ず頭に入れておくようにしましょう。<br/>
-0:33 それをもとにヒアリングをする形になるわけですが、大体にパターンがあって、単純にヒアリングをするというパターンですね。いろいろお話を聞いてこういうのですね、こういうのですね、っていうふうにお話を聞くパターンもあれば場合によってこれは確実に取りたい案件だってなったら、もう要件がまだまとまってない段階から定案所みたいなのを作っちゃったりすることもあります。それは借りの定案所で、例えばテキストベースへ既にいただいている状況を書いてなかったとしても、もう地体調子を超えるために一旦定案所を作っちゃうみたいなパターンですね。これに関してもある程度テーションを作った事例みたいなものもあったりするので その録画であったりとかテーションの事例も<br/>
-1:08 マナレッチをしてずいじためていきます 過去のものに関しても確診を診しております で 余計のヒアリングに関しては何を聞くかっていうと ある程度ヒアリングシートみたいな これ聞いたらいいよ みたいなものがあったりする上で 基本的には会話になるので 機能的なシートに基づいたヒアリングだとちょっと 適切な形ではないかなというのは 全てある程度の外でないみたいなものがあります それに基づいて、ニーズの深掘り課題の目がかってのしていきましょうと。 よは最初の時点でのヒアリングっていうのは、 これ以外ののであれば相談だと思ってください。 相談です。 よは、ここの時点で自中できるかどうかっていうのは決まってくるということを考えると、<br/>
-1:48 影響みたいなものですよね。 相手がどんな課題を持っていて、どんな悩みを持っていて、 それを深掘っていくと。 で、クラウントスラも自覚できてないような悩みの部分も、 深掘っていってあげた上で、そこに対して、 最終的な黒順位に入っていくというふうな イメージです で持ち上がう参加になった量は 濃厳だった量から どのようなデザイに作りたいのか っていうような機能的な ヒアリングもしていきましょう というところです ポイントとしてはここら辺の 課題の深掘りみたいなところって このヒアリングとしての機能の 深掘りだけではなくて のちのちの黒する定案につながるような ヒアリングっぽい仕切るといいかな というふうに思います<br/>
-2:33 例えば、その場で作るのは、例えば、SNSのヘッターだとしましょう。 SNSのヘッター1枚を作るのに、そんな大事なことをヒアリングする必要はありませんぶち切ってしまえば、 まあ、だいたい、そのSNSがどういうふうにやってるのかぐらいでいいんだけれども、 例えば、のちのちにLPとかホームページとかロゴとかスライドとか、立ち身にとかいろんなものを巻き取るよちがあるとするのであれば、 SNSだけじゃなくて、他の授業どうなっているのかとか、 どうせの全体ぞどうなっているのかっていうところまで聞いておきたいですよね。 それっていうのは、いざアンケンが走り始めてしまうとしっかりゆっくり時間を取って聞く機会っていうのはなかなかなかったりするので<br/>
-3:04 この初回ヒアリング相談の段階である程度周辺情報まで聞いておけると のちのちサプライズで転園をするってなったときに情報がある程度揃ってる形になるので かなり動きやすくなってくるっていうふうなイメージです そこにつながるような現地を取るであったりとか、例えば今回ちょっと減ったのが入れ頂いたと思うんですけれども 申し訳ればデザイは通じていろんなところで落ちからそうしたいと思っておりましてみたい つきましては安憲進行する中で こういうところがいいなと思ったら 全然見ていただいてからやるかやらないと決める 全然も客家していただいても 変わらないのを伝えさせていただいても よろしいですかみたいなこととかを <br/>
-3:39 紹介ヒアリングの段階で行っておけるかどうか でのちのちの福戦というかね のちのちの天安が通りやすくなるかどうか ていうのはおかまに変わってくるという ようなイメージです で全てになりますが基本的に技術が 作ってください で技術とアーカイプは 観点が終わった後に必ず共有するような形 アジェンダーも自然に作ってよくようにしてください で点燃所作成ですね これに関しては例えば自然にリサーチして おけるといいですよ とかっていうふうな話をしましたが 前提何かを作るというところじゃなくても こういうふうにリサーチして こういうふうな仮説を立てましたぐらいでも 軽くしろにまとまっていたりすると やっぱ先行からすると<br/>
-4:11 多くみたいな ちょっとびっくりするような 嬉しいサプライズかなというふうに思ったりしています なんで ここもまあ案件次第で結構 どういうふうな点燃所にする アイテムの期待値段に変わってきたりする部分があるので それは適時例の方を見て頂ければと思います ポイントとしては以下に先項の期待値を超えて この初回従中のタイミングだって まだ行っても問い合わせからミーティングしましたくらいなので その段階でなんかいろいろ持ってきてくれてます ずっとなったらもううれしいよねっていう話ですね そしたらミーティングが終わったのっちに 3つもりを作っていくことになります だいたいこうミーティングの中では外産ですね <br/>
-4:46 その内容であればだいたい数万円くらいです 数十万円くらいですみたいなことを伝えした上で ミーティングが終わったのち、できれば3回ない理想としては 当日中に3つもり所を作成します。 いわゆる成球所みたいな PDFのフォームマットで 3つもり所を作成したら、どれどれの作業項目が どれぐらいのコースでどれぐらいの金額ですってところを 参出していきます。ここにかしはテンプレートがあるので 完成をしてください。 で、3つもり所も目的ってのは何かというと、 まず透明性を待たせることを、 クライントからしたら、例えばウェブサイト 一個を作りますというと、何もしているか分かりません。 例えばウェブサイトを作ると、<br/>
-5:18 なったら結構いろんなことをやることがあるわけですよ 例えばトップページがあって 仮想ページコページがあって その後ページのうちのPC版のデザインと SP版のデザインがあって グローバルメニューどうなるかとか その イジラなきゃいけない機能みたいなところがあって 実装があって 実装も実装っていったら簡単なんですけど こういう まずHTMLシリーです マークアップゲンゴっていって 見た目の作ります で それを裏側のモロモロと繋げます で必要なプラスアルファの機能があったら 機能をやります 実装のサーバートとかドメインとか いろいろあったりするんですよね っていうふうにいろいろあるのを 取りまとめてデザインします<br/>
-5:56 っていうふうに行っちゃうと なんか簡単そうに見えてしまう ぶっちゃ切ってしまうと だから実際にはこういうふうな 裏側があるんですよ っていうところに透明性を持たせる かつあとは価格に対して こういうふうな作業があるんですよ っていうところのスリアを設定 意でも 見つもりっていうのは大事です 見つもりってなんか結構ね あいに何か項目一ついくら終わりみたいな感じで 出しちゃったりしがちなんですけれども レスに考えてこの見つもりを見た上で オッケーかオッケーじゃないかっていうのを決めていただいて そこで初めて受注整理図っていうふうな形になるので 制約の一番手前のところの資料であるってことを考えると この見つもり所のモンゴンであったりとか<br/>
-6:32 どういうふうな項目を分けにするのかとか 一つとってもかなりの影響があると すごく重要なところであると 受注を狙っていく上で というふうな意識を持っていただけるといいかなと思います はい</p>
                 <!-- 更新リクエスト -->
                 <div class="update-request-minimal">
                     <p>このページを改善する → <a href="feedback.html">ガイドライン追加/改善</a></p>
@@ -1650,7 +1667,7 @@
                     // 少し遅延させてからAIパネルを開く
                     setTimeout(() => {
                         aiPanel.classList.add('active');
-                    }, 300);
+                    }, 150);
                 } else {
                     aiPanel.classList.add('active');
                     mainContent.classList.add('with-ai');
@@ -1853,11 +1870,15 @@
                 const title = category.querySelector('.category-title');
                 if (title) {
                     const categoryName = title.textContent.trim();
-                    // LocalStorageは無視して、常に閉じた状態から開始
-                    // const savedState = localStorage.getItem(`category-${categoryName}`);
+                    // LocalStorageから保存済みの状態を取得
+                    const savedState = localStorage.getItem(`category-${categoryName}`);
                     
-                    // 常に閉じた状態に初期化
-                    category.classList.add('collapsed');
+                    // 保存済み状態があればそれを使用、なければ閉じた状態
+                    if (savedState === 'false') {
+                        category.classList.remove('collapsed');
+                    } else {
+                        category.classList.add('collapsed');
+                    }
                     
                     // トグルアイコン追加
                     if (!title.querySelector('.toggle-icon')) {
@@ -1881,11 +1902,15 @@
                 const title = folder.querySelector('.subcategory-folder-title');
                 if (title) {
                     const folderName = title.textContent.trim();
-                    // LocalStorageは無視して、常に閉じた状態から開始
-                    // const savedState = localStorage.getItem(`subcategory-${folderName}`);
+                    // LocalStorageから保存済みの状態を取得
+                    const savedState = localStorage.getItem(`subcategory-${folderName}`);
                     
-                    // 常に閉じた状態に初期化
-                    folder.classList.add('collapsed');
+                    // 保存済み状態があればそれを使用、なければ閉じた状態
+                    if (savedState === 'false') {
+                        folder.classList.remove('collapsed');
+                    } else {
+                        folder.classList.add('collapsed');
+                    }
                     
                     // トグルアイコン追加
                     if (!title.querySelector('.toggle-icon')) {
@@ -1894,7 +1919,7 @@
                         title.insertBefore(icon, title.firstChild);
                     }
                     
-                    // クリックイベント
+                    // クリックイベント - 独立して開閉（他のフォルダに影響しない）
                     title.addEventListener('click', (e) => {
                         e.stopPropagation();
                         folder.classList.toggle('collapsed');
@@ -1910,7 +1935,28 @@
             // 先にトグル機能を初期化（デフォルト状態を設定）
             initializeToggleCategories();
             
-            // ホームボタンクリック時に全カテゴリを閉じる
+            // ホームボタンクリック時に全カテゴリとサブカテゴリを閉じる
+            const homeLinks = document.querySelectorAll('a[href="index.html"]');
+            homeLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    // 全カテゴリを閉じる
+                    document.querySelectorAll('.category').forEach(cat => {
+                        cat.classList.add('collapsed');
+                    });
+                    // 全サブカテゴリも閉じる
+                    document.querySelectorAll('.subcategory-folder').forEach(folder => {
+                        folder.classList.add('collapsed');
+                    });
+                    // LocalStorageもクリア
+                    Object.keys(localStorage).forEach(key => {
+                        if (key.startsWith('category-') || key.startsWith('subcategory-')) {
+                            localStorage.removeItem(key);
+                        }
+                    });
+                });
+            });
+            
+            // 元のコード（削除予定）
             const homeButton = document.getElementById('homeButton');
             if (homeButton) {
                 homeButton.addEventListener('click', function(e) {
@@ -1935,35 +1981,12 @@
                 if (item.getAttribute('href') === currentPage) {
                     item.classList.add('active');
                     
-                    // アクティブなアイテムが含まれるカテゴリとサブカテゴリを展開
-                    let parent = item.parentElement;
-                    while (parent) {
-                        if (parent.classList.contains('category')) {
-                            parent.classList.remove('collapsed');
-                            // アクティブなカテゴリの状態を保存
-                            const title = parent.querySelector('.category-title');
-                            if (title) {
-                                const name = title.textContent.trim();
-                                localStorage.setItem(`category-${name}`, 'false');
-                            }
-                        } else if (parent.classList.contains('subcategory-folder')) {
-                            // サブカテゴリフォルダを展開
-                            parent.classList.remove('collapsed');
-                            const title = parent.querySelector('.subcategory-folder-title');
-                            if (title) {
-                                const name = title.textContent.trim();
-                                localStorage.setItem(`subcategory-${name}`, 'false');
-                            }
-                        }
-                        parent = parent.parentElement;
-                        if (parent && parent.classList.contains('sidebar-nav')) {
-                            break;
-                        }
-                    }
+                    // カテゴリとサブカテゴリの自動展開を無効化
+                    // ユーザーが手動で開閉したものはそのまま維持される
                 }
             });
 
-            // スムーススクロール for アンカーリンク
+            // スムーススクロールを無効化（即座にジャンプ）
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -1972,7 +1995,7 @@
                     
                     if (targetElement) {
                         targetElement.scrollIntoView({
-                            behavior: 'smooth',
+                            behavior: 'auto',  // smoothからautoに変更
                             block: 'start'
                         });
                     }

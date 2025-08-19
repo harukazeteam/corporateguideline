@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="format-detection" content="telephone=no">
+    <title>ディレクターの心得 | Harukazeガイドライン</title>
+    <style>
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --accent: #0066cc;
+            --accent-hover: #0052a3;
+            --border: #dee2e6;
+            --success: #28a745;
+            --warning: #ffc107;
+            --error: #dc3545;
+            --sidebar-bg: #f5f7f9;
+            --sidebar-hover: #e8ecf0;
+            --ai-bg: #f0f7ff;
+            --ai-border: #3498db;
+            --duration-badge-bg: #e3f2fd;
+            --duration-badge-text: #1976d2;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* サイドバー */
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: calc(100vh - 60px);
+            top: 60px;
+            z-index: 100;
+            overflow-y: auto;
+            transition: transform 0.15s ease; /* 高速化 */
+        }
+
+        /* 固定ヘッダー */
+        .global-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .site-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .site-name:hover {
+            color: var(--accent);
+        }
+
+        /* AIチャットパネル */
+        .ai-panel {
+            width: 400px;
+            background: var(--ai-bg);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            left: 280px;
+            height: 100vh;
+            display: none;
+            flex-direction: column;
+            z-index: 99;
+            transition: all 0.15s ease; /* 高速化 */
+        }
+
+        .ai-panel.active {
+            display: flex;
+        }
+
+        .ai-panel-header {
+            padding: 15px 20px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ai-panel-header h3 {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .ai-close-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 20px;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.1s; /* 高速化 */
+        }
+
+        .ai-close-btn:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .ai-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .ai-message {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-message.user {
+            flex-direction: row-reverse;
+        }
+
+        .ai-message-content {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+
+        .ai-message.user .ai-message-content {
+            background: #e3f2fd;
+        }
+
+        .ai-input-area {
+            padding: 15px;
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .ai-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .ai-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            font-size: 14px;
+            resize: none;
+        }
+
+        .ai-send-btn {
+            padding: 10px 20px;
+            background: var(--ai-border);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.1s; /* 高速化 */
+        }
+
+        .ai-send-btn:hover {
+            background: #2980b9;
+        }
+
+        /* サイドバーナビゲーション */
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 0 95px 0;
+        }
+
+        .category {
+            margin-bottom: 8px;
+        }
+
+        .category-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 8px 16px;
+            margin-bottom: 0;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            transition: all 0.1s ease; /* 高速化 */
+        }
+        
+        .category-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .category-title .toggle-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--text-secondary);
+            transition: transform 0.1s ease; /* 高速化 */
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        .category:not(.collapsed) > .category-title > .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .category-title:hover .toggle-icon {
+            border-left-color: var(--text-primary);
+        }
+        
+        .category-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.15s ease-out; /* 高速化 */
+        }
+        
+        .category:not(.collapsed) .category-content {
+            max-height: 2000px; /* より大きな値に */
+        }
+
+        /* サブカテゴリフォルダ */
+        .subcategory-folder {
+            margin-left: 16px;
+            margin-bottom: 4px;
+        }
+        
+        .subcategory-folder-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: 6px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            transition: all 0.1s ease; /* 高速化 */
+        }
+        
+        .subcategory-folder-title:hover {
+            color: var(--text-primary);
+            background: var(--sidebar-hover);
+        }
+        
+        .subcategory-folder-title .toggle-icon {
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 5px 0 5px 8px;
+            border-color: transparent transparent transparent var(--text-secondary);
+            transition: transform 0.1s ease; /* 高速化 */
+            flex-shrink: 0;
+            margin-right: 8px;
+        }
+        
+        .subcategory-folder:not(.collapsed) > .subcategory-folder-title > .toggle-icon {
+            transform: rotate(90deg);
+        }
+        
+        .subcategory-folder-title:hover .toggle-icon {
+            border-left-color: var(--text-primary);
+        }
+        
+        .subcategory-folder-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.15s ease-out; /* 高速化 */
+        }
+        
+        .subcategory-folder:not(.collapsed) .subcategory-folder-content {
+            max-height: 1500px; /* より大きな値に */
+        }
+        
+        .subcategory-folder .nav-item {
+            padding-left: 40px;
+            font-size: 13px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 24px 8px 32px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            border-left: 3px solid transparent;
+            transition: all 0.1s ease; /* 高速化 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            position: relative;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-hover);
+            border-left-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* 動画時間バッジ */
+        .duration-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            margin-left: auto;
+            background: var(--duration-badge-bg);
+            color: var(--duration-badge-text);
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .nav-item:hover .duration-badge {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* サイドバーフッター */
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--sidebar-bg);
+            border-top: 2px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-link {
+            display: block;
+            padding: 12px 24px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.1s; /* 高速化 */
+            cursor: pointer;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            font-family: inherit;
+        }
+
+        .footer-link:hover {
+            color: var(--accent);
+            background-color: var(--sidebar-hover);
+        }
+
+        .footer-divider {
+            width: calc(100% - 48px);
+            height: 1px;
+            background: var(--border);
+            margin: 0 24px;
+        }
+
+        /* 検索ボックス */
+        .search-container {
+            position: relative;
+            width: 300px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 8px 36px 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: all 0.1s ease; /* 高速化 */
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            pointer-events: none;
+        }
+        
+        /* 検索結果ドロップダウン */
+        .search-results {
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1000;
+        }
+        
+        .search-results.active {
+            display: block;
+        }
+        
+        .search-result-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.1s ease; /* 高速化 */
+        }
+        
+        .search-result-item:hover {
+            background: var(--bg-secondary);
+        }
+        
+        .search-result-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .search-result-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .search-result-highlight {
+            background: #ffeb3b;
+            color: #000;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+
+        /* メインコンテンツ */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            margin-top: 60px;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 60px);
+            transition: margin-left 0.15s ease; /* 高速化 */
+        }
+
+        .main-content.with-ai {
+            margin-left: 680px;
+        }
+
+        .content-body {
+            flex: 1;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* コンテンツスタイル */
+        .content-body h1 {
+            color: var(--text-primary);
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .content-body h1 .duration-badge {
+            font-size: 14px;
+            padding: 4px 10px;
+            margin-left: 0;
+        }
+
+        .content-body h2 {
+            color: var(--text-primary);
+            font-size: 28px;
+            font-weight: 600;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .content-body h3 {
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        .content-body p {
+            color: var(--text-primary);
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 16px;
+        }
+
+        .content-body ul, .content-body ol {
+            margin: 16px 0;
+            padding-left: 32px;
+            color: var(--text-primary);
+        }
+
+        .content-body li {
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        .content-body code {
+            background: var(--bg-secondary);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            color: var(--error);
+        }
+
+        .content-body pre {
+            background: var(--bg-secondary);
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .content-body pre code {
+            background: none;
+            padding: 0;
+            color: var(--text-primary);
+        }
+
+        .content-body blockquote {
+            border-left: 4px solid var(--accent);
+            padding-left: 20px;
+            margin: 20px 0;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .content-body table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        .content-body th {
+            background: var(--bg-secondary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        .content-body td {
+            padding: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .content-body img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .content-body a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.1s ease; /* 高速化 */
+        }
+
+        .content-body a:hover {
+            color: var(--accent-hover);
+            text-decoration: underline;
+        }
+
+        /* Loom埋め込み対応 */
+        .content-body iframe[src*="loom.com"] {
+            width: 800px !important;
+            max-width: 100%;
+            height: 450px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin: 20px 0;
+        }
+
+        /* AIチャットトグルボタン */
+        .ai-toggle-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: var(--ai-border);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.1s ease; /* 高速化 */
+            z-index: 98;
+        }
+
+        .ai-toggle-btn:hover {
+            background: #2980b9;
+            transform: scale(1.1);
+        }
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .content-body {
+                padding: 20px;
+            }
+            
+            .search-container {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .ai-panel {
+                width: 100%;
+                left: 0;
+            }
+            
+            .main-content.with-ai {
+                margin-left: 0;
+            }
+        }
+
+        /* ローディングインジケーター */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* スムーススクロール */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* カスタムスクロールバー */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-secondary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="global-header">
+        <a href="index.html" class="site-name">Harukazeガイドライン</a>
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="検索..." id="searchBox">
+            <span class="search-icon">🔍</span>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <nav class="sidebar">
+            <div class="sidebar-nav">
+                <div class="category">
+  <div class="category-title"><span class="toggle-icon"></span>基本情報</div>
+  <div class="category-content">
+    <div class="subcategory-folder">
+      <div class="subcategory-folder-title"><span class="toggle-icon"></span>はじめに</div>
+      <div class="subcategory-folder-content">
+        <a href="guideline_why.html" class="nav-item">このガイドラインの目的<span class="duration-badge">2分</span></a>
+        <a href="vision.html" class="nav-item">Harukazeが目指す世界<span class="duration-badge">3分</span></a>
+        <a href="page_03_3.html" class="nav-item">Harukazeの理念<span class="duration-badge">10分</span></a>
+        <a href="page_04_3.html" class="nav-item">Harukazeから提供できること<span class="duration-badge">3分</span></a>
+        <a href="page_05_2.html" class="nav-item">このガイドラインの活用法<span class="duration-badge">4分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder">
+      <div class="subcategory-folder-title"><span class="toggle-icon"></span>コミュニケーションガイド</div>
+      <div class="subcategory-folder-content">
+        <a href="communication_guide_1.html" class="nav-item">対クライアントコミュニケーションガイド<span class="duration-badge">17分</span></a>
+        <a href="communication_guide_2.html" class="nav-item">対チームメンバーコミュニケーションガイド<span class="duration-badge">12分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder">
+      <div class="subcategory-folder-title"><span class="toggle-icon"></span>ディレクターの心得</div>
+      <div class="subcategory-folder-content">
+        <a href="page_01_1.html" class="nav-item">全体像におけるディレクターの位置付け<span class="duration-badge">4分</span></a>
+        <a href="page_02_1.html" class="nav-item">主要な当事者領域・責任範囲<span class="duration-badge">3分</span></a>
+        <a href="page_03_1.html" class="nav-item">何を大事に行動して欲しいか<span class="duration-badge">9</span></a>
+        <a href="page_04_1.html" class="nav-item">Harukaze 5バリューの実践<span class="duration-badge">5</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder">
+      <div class="subcategory-folder-title"><span class="toggle-icon"></span>代表的なトラブルシューティング</div>
+      <div class="subcategory-folder-content">
+        <a href="page_01_3.html" class="nav-item">納期が遅れそうな時<span class="duration-badge">3分</span></a>
+        <a href="page_02_3.html" class="nav-item">品質問題：基本的なミスの連発<span class="duration-badge">2分</span></a>
+        <a href="page_03_4.html" class="nav-item">要件が変わってしまった<span class="duration-badge">2分</span></a>
+        <a href="page_04_4.html" class="nav-item">コミュニケーション問題<span class="duration-badge">1分</span></a>
+      </div>
+    </div>
+    <div class="subcategory-folder">
+      <div class="subcategory-folder-title"><span class="toggle-icon"></span>全体の業務プロセス</div>
+      <div class="subcategory-folder-content">
+        <a href="page_01_2.html" class="nav-item">前提問い合わせフェーズ<span class="duration-badge">3</span></a>
+        <a href="page_02_2.html" class="nav-item">ヒアリング、提案、見積もりフェーズ<span class="duration-badge">7</span></a>
+        <a href="page_03_2.html" class="nav-item">受注、契約フェーズ<span class="duration-badge">1</span></a>
+        <a href="page_04_2.html" class="nav-item">チーム結成フェーズ<span class="duration-badge">3</span></a>
+        <a href="page_05_1.html" class="nav-item">プロジェクト始動、制作フェーズ<span class="duration-badge">4</span></a>
+        <a href="page_06.html" class="nav-item">納品フェーズ<span class="duration-badge">1</span></a>
+        <a href="page_07.html" class="nav-item">請求支払いフェーズ<span class="duration-badge">1</span></a>
+        <a href="page_08.html" class="nav-item">振り返りフェーズ<span class="duration-badge">1</span></a>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="category collapsed">
+  <div class="category-title"><span class="toggle-icon"></span>商談マニュアル</div>
+  <div class="category-content">
+    <a href="page_10.html" class="nav-item">法人商談の全体像</a>
+    <a href="page_11.html" class="nav-item">法人商談の心得</a>
+    <a href="page_12.html" class="nav-item">信頼関係の構築テクニック</a>
+    <a href="page_13.html" class="nav-item">ヒアリングマスター講座</a>
+    <a href="page_14.html" class="nav-item">提案力を高める実践テクニック</a>
+    <a href="page_15.html" class="nav-item">クロージング成功の秘訣</a>
+    <a href="page_16.html" class="nav-item">商材別の攻略法</a>
+    <a href="page_17.html" class="nav-item">難易度別の対処法</a>
+  </div>
+</div>
+<div class="category collapsed">
+  <div class="category-title"><span class="toggle-icon"></span>その他</div>
+  <div class="category-content">
+    <a href="ai-assistant.html" class="nav-item">AIチャット（テスト版）</a>
+    <a href="faq.html" class="nav-item">よくある質問（FAQ）</a>
+    <a href="feedback.html" class="nav-item">ガイドライン追加/改善</a>
+    <a href="improvement_cases.html" class="nav-item">実践改善事例集</a>
+  </div>
+</div>
+
+            </div>
+            <div class="sidebar-footer">
+                <button class="footer-link" onclick="toggleAIPanel()">AIチャット</button>
+                <div class="footer-divider"></div>
+                <a href="feedback.html" class="footer-link">ガイドライン追加・改善</a>
+                <div class="footer-divider"></div>
+                <a href="faq.html" class="footer-link">よくある質問FAQ</a>
+            </div>
+        </nav>
+
+        <div class="ai-panel" id="aiPanel">
+            <div class="ai-panel-header">
+                <h3>AI アシスタント</h3>
+                <button class="ai-close-btn" onclick="toggleAIPanel()">×</button>
+            </div>
+            <div class="ai-messages" id="aiMessages"></div>
+            <div class="ai-input-area">
+                <div class="ai-input-container">
+                    <textarea class="ai-input" id="aiInput" placeholder="質問を入力..." rows="2"></textarea>
+                    <button class="ai-send-btn" onclick="sendMessage()">送信</button>
+                </div>
+            </div>
+        </div>
+
+        <main class="main-content" id="mainContent">
+            <div class="content-body">
+                <h1 id="_1">ディレクターの心得</h1>
+<p>Harukazeパートナーディレクターとして、どのようなスタンスでクライアントへの価値提供を最大化できるのか。関わる上で関係性を最大化するための心構えについて学びます。</p>
+<h2 id="_2">📚 学習コンテンツ</h2>
+<h3 id="1"><a href="./01_全体像におけるディレクターの位置付け.html">1. 全体像におけるディレクターの位置付け</a></h3>
+<p><strong>視聴時間: 4分</strong>
+ディレクターの役割と、Harukazeのパートナーとしての責任について理解します。</p>
+<h3 id="2"><a href="./02_主要な当事者領域責任範囲.html">2. 主要な当事者領域・責任範囲</a></h3>
+<p><strong>視聴時間: 3分</strong>
+ディレクターが担う具体的な責任範囲と、各領域での役割を明確にします。</p>
+<h3 id="3"><a href="./03_何を大事に行動して欲しいか.html">3. 何を大事に行動して欲しいか</a></h3>
+<p><strong>視聴時間: 4分</strong>
+日々の行動における重要な価値観と判断基準について学びます。</p>
+<h3 id="4-harukaze-5"><a href="./04_Harukaze 5バリューの実践.html">4. Harukaze 5バリューの実践</a></h3>
+<p><strong>視聴時間: 5分</strong>
+Harukazeの5つのバリューを実際の業務でどう実践するかを理解します。</p>
+<h2 id="_3">全体の学習時間</h2>
+<p>約16分</p>
+<h2 id="_4">このセクションで身につくこと</h2>
+<ul>
+<li>ディレクターとしての責任と役割の理解</li>
+<li>Harukazeの価値観に基づいた行動指針</li>
+<li>クライアントへの価値提供を最大化する考え方</li>
+<li>チームとして成果を出すための協働スタイル</li>
+</ul>
+            </div>
+        </main>
+
+        <button class="ai-toggle-btn" onclick="toggleAIPanel()">💬</button>
+    </div>
+
+    <script>
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSidebar();
+            initializeSearch();
+            initializeAIChat();
+            highlightCurrentPage();
+            extractAndDisplayDuration();
+        });
+
+        // サイドバーの初期化（基本情報を自動展開）
+        function initializeSidebar() {
+            // カテゴリトグルの設定
+            const categoryTitles = document.querySelectorAll('.category-title');
+            categoryTitles.forEach(title => {
+                const category = title.parentElement;
+                const categoryName = title.textContent.trim();
+                
+                // 基本情報カテゴリをデフォルトで展開
+                if (categoryName.includes('基本情報')) {
+                    category.classList.remove('collapsed');
+                    
+                    // 基本情報内のすべてのサブカテゴリも展開
+                    const subFolders = category.querySelectorAll('.subcategory-folder');
+                    subFolders.forEach(folder => {
+                        folder.classList.remove('collapsed');
+                    });
+                } else {
+                    // その他のカテゴリは折りたたむ
+                    category.classList.add('collapsed');
+                }
+                
+                title.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    category.classList.toggle('collapsed');
+                    saveToggleState();
+                });
+            });
+
+            // サブカテゴリフォルダのトグル設定
+            const folderTitles = document.querySelectorAll('.subcategory-folder-title');
+            folderTitles.forEach(title => {
+                title.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const folder = title.parentElement;
+                    folder.classList.toggle('collapsed');
+                    saveToggleState();
+                });
+            });
+
+            // 保存された状態を復元（基本情報の展開状態は上書きしない）
+            restoreToggleState();
+        }
+
+        // トグル状態の保存
+        function saveToggleState() {
+            const state = {};
+            document.querySelectorAll('.category').forEach((cat, index) => {
+                state[`cat_${index}`] = !cat.classList.contains('collapsed');
+            });
+            document.querySelectorAll('.subcategory-folder').forEach((folder, index) => {
+                state[`folder_${index}`] = !folder.classList.contains('collapsed');
+            });
+            localStorage.setItem('sidebarState', JSON.stringify(state));
+        }
+
+        // トグル状態の復元（基本情報は除く）
+        function restoreToggleState() {
+            const savedState = localStorage.getItem('sidebarState');
+            if (savedState) {
+                const state = JSON.parse(savedState);
+                document.querySelectorAll('.category').forEach((cat, index) => {
+                    const categoryTitle = cat.querySelector('.category-title');
+                    const categoryName = categoryTitle ? categoryTitle.textContent.trim() : '';
+                    
+                    // 基本情報カテゴリは状態復元をスキップ（常に展開）
+                    if (!categoryName.includes('基本情報')) {
+                        if (state[`cat_${index}`] === false) {
+                            cat.classList.add('collapsed');
+                        } else if (state[`cat_${index}`] === true) {
+                            cat.classList.remove('collapsed');
+                        }
+                    }
+                });
+                
+                document.querySelectorAll('.subcategory-folder').forEach((folder, index) => {
+                    // 基本情報内のサブカテゴリかチェック
+                    const parentCategory = folder.closest('.category');
+                    const categoryTitle = parentCategory ? parentCategory.querySelector('.category-title') : null;
+                    const categoryName = categoryTitle ? categoryTitle.textContent.trim() : '';
+                    
+                    // 基本情報内のサブカテゴリは状態復元をスキップ（常に展開）
+                    if (!categoryName.includes('基本情報')) {
+                        if (state[`folder_${index}`] === false) {
+                            folder.classList.add('collapsed');
+                        } else if (state[`folder_${index}`] === true) {
+                            folder.classList.remove('collapsed');
+                        }
+                    }
+                });
+            }
+        }
+
+        // 現在のページをハイライト
+        function highlightCurrentPage() {
+            const currentPath = window.location.pathname.split('/').pop();
+            document.querySelectorAll('.nav-item').forEach(item => {
+                if (item.getAttribute('href') === currentPath) {
+                    item.classList.add('active');
+                    
+                    // 親要素を展開
+                    let parent = item.closest('.category');
+                    if (parent) {
+                        parent.classList.remove('collapsed');
+                    }
+                    parent = item.closest('.subcategory-folder');
+                    if (parent) {
+                        parent.classList.remove('collapsed');
+                    }
+                }
+            });
+        }
+
+        // 動画時間をタイトルに表示
+        function extractAndDisplayDuration() {
+            // ページのコンテンツから時間情報を抽出
+            const content = document.querySelector('.content-body');
+            if (!content) return;
+            
+            // 「duration: 2分」のようなメタデータを探す
+            const durationMatch = content.textContent.match(/duration:\s*(\d+分)/i);
+            if (durationMatch) {
+                const duration = durationMatch[1];
+                
+                // H1タイトルに時間バッジを追加
+                const h1 = content.querySelector('h1');
+                if (h1 && !h1.querySelector('.duration-badge')) {
+                    const badge = document.createElement('span');
+                    badge.className = 'duration-badge';
+                    badge.textContent = duration;
+                    h1.appendChild(badge);
+                }
+            }
+        }
+
+        // 検索機能の初期化
+        function initializeSearch() {
+            const searchBox = document.getElementById('searchBox');
+            const searchResults = document.getElementById('searchResults');
+            let searchIndex = null;
+
+            // 検索インデックスの読み込み
+            fetch('search-index.json')
+                .then(response => response.json())
+                .then(data => {
+                    searchIndex = data;
+                })
+                .catch(error => console.error('検索インデックスの読み込みエラー:', error));
+
+            searchBox.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                
+                if (query.length < 2) {
+                    searchResults.classList.remove('active');
+                    return;
+                }
+
+                if (!searchIndex) {
+                    searchResults.innerHTML = '<div class="search-no-results">検索インデックスを読み込み中...</div>';
+                    searchResults.classList.add('active');
+                    return;
+                }
+
+                const results = searchIndex.filter(item => {
+                    return item.title.toLowerCase().includes(query) ||
+                           item.content.toLowerCase().includes(query);
+                });
+
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="search-no-results">検索結果が見つかりませんでした</div>';
+                } else {
+                    searchResults.innerHTML = results.slice(0, 10).map(item => {
+                        const titleHighlighted = highlightText(item.title, query);
+                        const contentSnippet = getSnippet(item.content, query);
+                        const contentHighlighted = highlightText(contentSnippet, query);
+                        
+                        return `
+                            <div class="search-result-item" onclick="window.location.href='${item.url}'">
+                                <div class="search-result-title">${titleHighlighted}</div>
+                                <div class="search-result-content">${contentHighlighted}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+                searchResults.classList.add('active');
+            });
+
+            // 検索ボックス外をクリックしたら閉じる
+            document.addEventListener('click', function(e) {
+                if (!searchBox.contains(e.target) && !searchResults.contains(e.target)) {
+                    searchResults.classList.remove('active');
+                }
+            });
+        }
+
+        function highlightText(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<span class="search-result-highlight">$1</span>');
+        }
+
+        function getSnippet(content, query) {
+            const index = content.toLowerCase().indexOf(query.toLowerCase());
+            if (index === -1) return content.slice(0, 100) + '...';
+            
+            const start = Math.max(0, index - 40);
+            const end = Math.min(content.length, index + query.length + 40);
+            
+            return (start > 0 ? '...' : '') + 
+                   content.slice(start, end) + 
+                   (end < content.length ? '...' : '');
+        }
+
+        // AIチャット機能
+        function initializeAIChat() {
+            const aiInput = document.getElementById('aiInput');
+            if (aiInput) {
+                aiInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        sendMessage();
+                    }
+                });
+            }
+        }
+
+        function toggleAIPanel() {
+            const panel = document.getElementById('aiPanel');
+            const mainContent = document.getElementById('mainContent');
+            
+            panel.classList.toggle('active');
+            mainContent.classList.toggle('with-ai');
+            
+            if (panel.classList.contains('active')) {
+                document.getElementById('aiInput').focus();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('aiInput');
+            const messagesContainer = document.getElementById('aiMessages');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // ユーザーメッセージを追加
+            const userMessage = document.createElement('div');
+            userMessage.className = 'ai-message user';
+            userMessage.innerHTML = `
+                <div class="ai-message-content">${escapeHtml(message)}</div>
+            `;
+            messagesContainer.appendChild(userMessage);
+            
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            // AIの応答を追加（ローディング表示）
+            const aiMessage = document.createElement('div');
+            aiMessage.className = 'ai-message';
+            aiMessage.innerHTML = `
+                <div class="ai-message-content">
+                    <span class="loading"></span> 考え中...
+                </div>
+            `;
+            messagesContainer.appendChild(aiMessage);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            
+            try {
+                // Vercel APIを呼び出し
+                const response = await fetch('https://harukaze-guideline-api.vercel.app/api/chat-gemini-simple', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('API response was not ok');
+                }
+                
+                const data = await response.json();
+                
+                // AIの応答を更新
+                aiMessage.innerHTML = `
+                    <div class="ai-message-content">${escapeHtml(data.response)}</div>
+                `;
+            } catch (error) {
+                console.error('Error:', error);
+                
+                // エラー時はローカルフォールバック
+                const fallbackResponses = [
+                    'ガイドラインについてご質問ありがとうございます。より詳しい情報は、各セクションをご参照ください。',
+                    'そのトピックについては、該当するセクションで詳しく説明されています。サイドバーから探してみてください。',
+                    'ご質問ありがとうございます。関連する情報は、ガイドラインの各ページでご確認いただけます。'
+                ];
+                
+                const randomResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+                aiMessage.innerHTML = `
+                    <div class="ai-message-content">${randomResponse}</div>
+                `;
+            }
+            
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function escapeHtml(text) {
+            const map = {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            };
+            return text.replace(/[&<>"']/g, m => map[m]);
+        }
+    </script>
+</body>
+</html>
