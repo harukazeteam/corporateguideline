@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# テスト出力
+test_output/
+test_*.html
+*_test.py
+
+# バックアップファイル
+*.backup
+*_backup.*
+*.bak
+*.old
+
+# ログファイル
+*.log
+logs/
+
+# 一時ファイル
+*.tmp
+.temp/
+tmp/
+
+# 開発用設定
+.env
+.env.local
+config.local.json
+
+# Node.js（将来の拡張用）
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# カバレッジレポート
+htmlcov/
+.coverage
+.pytest_cache/
+
+# ビルド成果物（ローカルテスト用）
+dist/
+build/
+*.egg-info/

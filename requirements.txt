@@ -1,0 +1,19 @@
+# Harukazeコーポレートガイドライン
+# Python依存パッケージ一覧
+# 
+# インストール方法:
+# pip install -r requirements.txt
+
+# Markdown処理
+markdown>=3.4.0
+
+# YAML処理（フロントマター用）
+PyYAML>=6.0
+
+# HTML解析（検索インデックス生成用）
+beautifulsoup4>=4.11.0
+
+# オプション: 開発ツール
+# black>=22.0.0  # コードフォーマッター
+# flake8>=5.0.0  # リンター
+# pytest>=7.0.0  # テストフレームワーク
