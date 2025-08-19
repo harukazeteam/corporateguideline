@@ -289,26 +289,26 @@ class ImprovedSiteGenerator:
         return None
     
     def build_navigation_map(self):
-        """ナビゲーションマップを構築（サブカテゴリを跨いだナビゲーション）"""
+        """ナビゲーションマップを構築（すべてのカテゴリを跨いだナビゲーション）"""
         self.navigation_map = {}
         
-        # 基本情報カテゴリ内のページを取得
-        basic_info_pages = [p for p in self.pages if p['category'] == '基本情報']
+        # すべてのページを順番に処理（カテゴリ・サブカテゴリを跨いで）
+        all_pages = self.pages  # すでにソート済み
         
-        for i, page in enumerate(basic_info_pages):
+        for i, page in enumerate(all_pages):
             nav = {}
             
             # 前のページ
             if i > 0:
-                prev_page = basic_info_pages[i - 1]
+                prev_page = all_pages[i - 1]
                 nav['prev'] = {
                     'title': prev_page['title'],
                     'url': prev_page['output_name']
                 }
             
-            # 次のページ（サブカテゴリを跨いで）
-            if i < len(basic_info_pages) - 1:
-                next_page = basic_info_pages[i + 1]
+            # 次のページ
+            if i < len(all_pages) - 1:
+                next_page = all_pages[i + 1]
                 nav['next'] = {
                     'title': next_page['title'],
                     'url': next_page['output_name']
@@ -472,10 +472,59 @@ class ImprovedSiteGenerator:
             md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc'])
             html_content = md.convert(page['content'])
             
-            # ナビゲーションボタンは削除（「次の動画へ進む」ボタンは不要）
-            # if page['category'] == '基本情報' and page['output_name'] in self.navigation_map:
-            #     nav = self.navigation_map[page['output_name']]
-            #     ... (削除)
+            # ナビゲーションボタンを追加（すべてのページに）
+            if page['output_name'] in self.navigation_map:
+                nav = self.navigation_map[page['output_name']]
+                nav_html = '''<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 60px; margin-bottom: 30px; gap: 20px;">
+'''
+                
+                if 'prev' in nav:
+                    nav_html += f'''  <a href="{nav["prev"]["url"]}" style="
+                        display: inline-flex;
+                        align-items: center;
+                        padding: 12px 24px;
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 25px;
+                        font-weight: 500;
+                        font-size: 14px;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+                    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.4)';" 
+                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 10px rgba(102, 126, 234, 0.3)';">
+                        ← 前へ
+                    </a>
+'''
+                else:
+                    nav_html += '  <span></span>\n'
+                
+                if 'next' in nav:
+                    nav_html += f'''  <a href="{nav["next"]["url"]}" style="
+                        display: inline-flex;
+                        align-items: center;
+                        padding: 12px 24px;
+                        background: linear-gradient(135deg, #667eea, #764ba2);
+                        color: white;
+                        text-decoration: none;
+                        border-radius: 25px;
+                        font-weight: 500;
+                        font-size: 14px;
+                        transition: transform 0.2s, box-shadow 0.2s;
+                        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+                        margin-left: auto;
+                    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.4)';" 
+                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 10px rgba(102, 126, 234, 0.3)';">
+                        次へ →
+                    </a>
+'''
+                else:
+                    nav_html += '  <span></span>\n'
+                
+                nav_html += '</div>\n'
+                
+                # コンテンツの最後にナビゲーションを追加
+                html_content = html_content + nav_html
             
             # テンプレートに値を挿入
             page_html = template

@@ -12,12 +12,6 @@ duration: 3分
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/886750c7f7bd4ed091c282551ade1d0b?sid=a2ab17ae-d1d3-4093-b2df-82039ecb6ce8" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
-<div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-  <a href="guideline_why.html" style="text-decoration: none;">← 前へ: このガイドラインの目的</a>
-  <span>2/5</span>
-  <a href="page_03.html" style="text-decoration: none;">次へ: Harukazeの理念 →</a>
-</div>
-
 ## 内容
 
 「なぜ、Harukazeは法人事業に取り組むのか？」
@@ -51,8 +45,3 @@ Harukazeが目指している世界を実現するために、法人事業部で
 
 ---
 
-<div style="display: flex; justify-content: space-between; margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-  <a href="guideline_why.html" style="text-decoration: none;">← 前へ: このガイドラインの目的</a>
-  <span>2/5</span>
-  <a href="page_03.html" style="text-decoration: none;">次へ: Harukazeの理念 →</a>
-</div>

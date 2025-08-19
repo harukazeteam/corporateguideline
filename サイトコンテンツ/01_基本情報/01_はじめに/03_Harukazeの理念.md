@@ -12,12 +12,6 @@ duration: 10分
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/b90b10e4d93f495298412ebaaaf14c07?sid=04553d64-3b1a-421f-93ee-f10943203a37" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
-<div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-  <a href="vision.html" style="text-decoration: none;">← 前へ: Harukazeが目指す世界</a>
-  <span>3/5</span>
-  <a href="page_04.html" style="text-decoration: none;">次へ: Harukazeから提供できること →</a>
-</div>
-
 ## 内容
 
 「なぜ、素晴らしいクリエイティブが正当に評価されないのだろう？」
@@ -107,8 +101,3 @@ duration: 10分
 
 ---
 
-<div style="display: flex; justify-content: space-between; margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-  <a href="vision.html" style="text-decoration: none;">← 前へ: Harukazeが目指す世界</a>
-  <span>3/5</span>
-  <a href="page_04.html" style="text-decoration: none;">次へ: Harukazeから提供できること →</a>
-</div>

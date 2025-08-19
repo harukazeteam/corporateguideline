@@ -12,12 +12,6 @@ duration: 3分
 
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/f8c78ed5e5944935b5b6af3c113081ed?sid=03a10ca4-27e2-47cc-b967-77a23a04f546" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
 
-<div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-  <a href="page_03.html" style="text-decoration: none;">← 前へ: Harukazeの理念</a>
-  <span>4/5</span>
-  <a href="page_05.html" style="text-decoration: none;">次へ: このガイドラインの活用法 →</a>
-</div>
-
 ## 内容
 
 「一緒に仕事をするなら、お互いにとって価値のある関係でありたい」
@@ -134,8 +128,3 @@ AIを活用することで、より創造的な仕事に集中できる環境を
 
 ---
 
-<div style="display: flex; justify-content: space-between; margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-  <a href="page_03.html" style="text-decoration: none;">← 前へ: Harukazeの理念</a>
-  <span>4/5</span>
-  <a href="page_05.html" style="text-decoration: none;">次へ: このガイドラインの活用法 →</a>
-</div>
