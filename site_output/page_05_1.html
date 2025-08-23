@@ -48,7 +48,7 @@
 
         /* サイドバー */
         .sidebar {
-            width: 280px;
+            width: 320px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             display: flex;
@@ -67,7 +67,7 @@
             background: var(--ai-bg);
             border-right: 1px solid var(--border);
             position: fixed;
-            left: 280px;
+            left: 320px;
             height: 100vh;
             display: none;
             flex-direction: column;
@@ -385,7 +385,11 @@
             flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            line-height: 1.4;
             padding-right: 8px;
         }
         
@@ -595,7 +599,7 @@
         /* メインコンテンツ */
         .main-content {
             flex: 1;
-            margin-left: 280px;
+            margin-left: 320px;
             margin-top: 60px; /* ヘッダーの高さ分 */
             display: flex;
             flex-direction: column;
@@ -908,9 +912,9 @@
         
         /* Loom動画の埋め込みスタイル */
         .content-body div[style*="position: relative"] {
-            max-width: 800px;
-            margin: 24px auto;
-            background: #000; /* 黒い背景を追加して動画の境界を明確に */
+            width: 100%;
+            margin: 24px 0;
+            background: #f5f5f5;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -920,38 +924,26 @@
         .loom-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            margin: 24px auto;
-            background: #000;
+            margin: 24px 0;
+            background: #f5f5f5;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            /* aspect-ratioで正確な比率を設定 */
-            aspect-ratio: 16 / 9;
         }
         
         .loom-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
+            height: auto;
             border: none;
-            /* iframeの黒い背景も設定 */
-            background: #000;
+            display: block;
         }
         
-        /* Loomの標準的な比率に対応 */
-        .loom-container[data-aspect="16:10"] {
-            aspect-ratio: 16 / 10;
-        }
-        
-        .loom-container[data-aspect="4:3"] {
-            aspect-ratio: 4 / 3;
-        }
-        
-        .loom-container[data-aspect="1:1"] {
-            aspect-ratio: 1 / 1;
+        /* Loomの動画サイズに応じて自動調整 */
+        .content-body iframe[src*="loom.com"] {
+            width: 100%;
+            height: auto;
+            min-height: 450px;
+            aspect-ratio: 16 / 9;
         }
 
         .loom-embed {
@@ -1537,7 +1529,6 @@
         <main class="main-content" id="mainContent">
             <div class="content-body">
                 <h1 id="_1">ガイドライン活用法</h1>
-<h2 id="4">動画で理解する（4分）</h2>
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe allowfullscreen="" frameborder="0" mozallowfullscreen="" src="https://www.loom.com/embed/342c81f74a8542318e57ba831ee09f5e?sid=1805b64d-92f6-447b-b7b5-84952261af60" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;" webkitallowfullscreen=""></iframe></div><div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 30px; gap: 20px;">
 <a href="page_04_2.html" onmouseout="this.style.backgroundColor='white'; this.style.color='#0066cc';" onmouseover="this.style.backgroundColor='#0066cc'; this.style.color='white';" style="
                         display: inline-flex;
@@ -1572,11 +1563,6 @@
                     </a>
 </div>
 
-<div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-<a href="page_04.html" style="text-decoration: none;">← 前へ: Harukazeから提供できること</a>
-<span>5/5</span>
-<a href="director_mindset.html" style="text-decoration: none;">次の章へ: ディレクターの心得 →</a>
-</div>
 <h2 id="_2">内容</h2>
 <p>「このガイドラインを、あなたの成長の道しるべにしてください」</p>
 <p>膨大な情報の中から、必要なものを必要なタイミングで活用できるよう、このガイドラインは設計されています。</p>
@@ -1645,11 +1631,6 @@
 次は「ディレクターの心得」へ進み、より実践的な内容を学んでいきましょう。</p>
 <p>共に、クリエイティブの未来を創っていきましょう！</p>
 <hr/>
-<div style="display: flex; justify-content: space-between; margin-top: 40px; padding: 20px; background: #f5f5f5; border-radius: 8px;">
-<a href="page_04.html" style="text-decoration: none;">← 前へ: Harukazeから提供できること</a>
-<span>5/5</span>
-<a href="director_mindset.html" style="text-decoration: none;">次の章へ: ディレクターの心得 →</a>
-</div>
                 <!-- 更新リクエスト -->
                 <div class="update-request-minimal">
                     <p>このページを改善する → <a href="feedback.html">ガイドライン追加/改善</a></p>

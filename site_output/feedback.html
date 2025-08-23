@@ -48,7 +48,7 @@
 
         /* サイドバー */
         .sidebar {
-            width: 280px;
+            width: 320px;
             background: var(--sidebar-bg);
             border-right: 1px solid var(--border);
             display: flex;
@@ -67,7 +67,7 @@
             background: var(--ai-bg);
             border-right: 1px solid var(--border);
             position: fixed;
-            left: 280px;
+            left: 320px;
             height: 100vh;
             display: none;
             flex-direction: column;
@@ -385,7 +385,11 @@
             flex: 1;
             overflow: hidden;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            white-space: normal;
+            line-height: 1.4;
             padding-right: 8px;
         }
         
@@ -595,7 +599,7 @@
         /* メインコンテンツ */
         .main-content {
             flex: 1;
-            margin-left: 280px;
+            margin-left: 320px;
             margin-top: 60px; /* ヘッダーの高さ分 */
             display: flex;
             flex-direction: column;
@@ -908,9 +912,9 @@
         
         /* Loom動画の埋め込みスタイル */
         .content-body div[style*="position: relative"] {
-            max-width: 800px;
-            margin: 24px auto;
-            background: #000; /* 黒い背景を追加して動画の境界を明確に */
+            width: 100%;
+            margin: 24px 0;
+            background: #f5f5f5;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -920,38 +924,26 @@
         .loom-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            margin: 24px auto;
-            background: #000;
+            margin: 24px 0;
+            background: #f5f5f5;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            /* aspect-ratioで正確な比率を設定 */
-            aspect-ratio: 16 / 9;
         }
         
         .loom-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
+            height: auto;
             border: none;
-            /* iframeの黒い背景も設定 */
-            background: #000;
+            display: block;
         }
         
-        /* Loomの標準的な比率に対応 */
-        .loom-container[data-aspect="16:10"] {
-            aspect-ratio: 16 / 10;
-        }
-        
-        .loom-container[data-aspect="4:3"] {
-            aspect-ratio: 4 / 3;
-        }
-        
-        .loom-container[data-aspect="1:1"] {
-            aspect-ratio: 1 / 1;
+        /* Loomの動画サイズに応じて自動調整 */
+        .content-body iframe[src*="loom.com"] {
+            width: 100%;
+            height: auto;
+            min-height: 450px;
+            aspect-ratio: 16 / 9;
         }
 
         .loom-embed {
@@ -1543,20 +1535,17 @@
 <h2 id="github-issue">追加/改善はGitHub Issueで</h2>
 <p>ガイドラインへの改善提案は、透明性と効率性を重視してGitHub Issueで管理しています。</p>
 <h3 id="3">以下の3つから選んでください：</h3>
-<div style="display: flex; gap: 16px; margin: 30px 0; flex-wrap: wrap; justify-content: center;">
-<a href="https://github.com/Hisashi0001/harukaze/issues/new?assignees=&amp;labels=%E3%82%B3%E3%83%B3%E3%83%86%E3%83%B3%E3%83%84%E8%BF%BD%E5%8A%A0&amp;projects=&amp;template=content_addition.md&amp;title=%5B%E8%BF%BD%E5%8A%A0%5D+" style="flex: 1; min-width: 200px; padding: 20px 16px; background: #ffffff; border: 1px solid #d0d7de; text-decoration: none; text-align: center; color: #0066cc; border-radius: 8px; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12); display: block; position: relative; overflow: hidden;" target="_blank">
-<div style="font-weight: 600; font-size: 16px;">コンテンツ追加</div>
 <div style="font-size: 13px; margin-top: 6px; color: #57606a;">新しい知見やテクニックを追加</div>
-</a>
-<a href="https://github.com/Hisashi0001/harukaze/issues/new?assignees=&amp;labels=%E5%86%85%E5%AE%B9%E4%BF%AE%E6%AD%A3&amp;projects=&amp;template=content_fix.md&amp;title=%5B%E4%BF%AE%E6%AD%A3%5D+" style="flex: 1; min-width: 200px; padding: 20px 16px; background: #ffffff; border: 1px solid #d0d7de; text-decoration: none; text-align: center; color: #0066cc; border-radius: 8px; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12); display: block; position: relative; overflow: hidden;" target="_blank">
+<p></p>
+<p><a href="https://github.com/Hisashi0001/harukaze/issues/new?assignees=&amp;labels=%E5%86%85%E5%AE%B9%E4%BF%AE%E6%AD%A3&amp;projects=&amp;template=content_fix.md&amp;title=%5B%E4%BF%AE%E6%AD%A3%5D+" style="flex: 1; min-width: 200px; padding: 20px 16px; background: #ffffff; border: 1px solid #d0d7de; text-decoration: none; text-align: center; color: #0066cc; border-radius: 8px; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12); display: block; position: relative; overflow: hidden;" target="_blank">
 <div style="font-weight: 600; font-size: 16px;">内容修正</div>
 <div style="font-size: 13px; margin-top: 6px; color: #57606a;">既存の内容を改善・修正</div>
-</a>
-<a href="https://github.com/Hisashi0001/harukaze/issues/new?assignees=&amp;labels=%E8%B3%AA%E5%95%8F&amp;projects=&amp;template=question.md&amp;title=%5B%E8%B3%AA%E5%95%8F%5D+" style="flex: 1; min-width: 200px; padding: 20px 16px; background: #ffffff; border: 1px solid #d0d7de; text-decoration: none; text-align: center; color: #0066cc; border-radius: 8px; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12); display: block; position: relative; overflow: hidden;" target="_blank">
+</a></p>
+<p><a href="https://github.com/Hisashi0001/harukaze/issues/new?assignees=&amp;labels=%E8%B3%AA%E5%95%8F&amp;projects=&amp;template=question.md&amp;title=%5B%E8%B3%AA%E5%95%8F%5D+" style="flex: 1; min-width: 200px; padding: 20px 16px; background: #ffffff; border: 1px solid #d0d7de; text-decoration: none; text-align: center; color: #0066cc; border-radius: 8px; transition: all 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.12); display: block; position: relative; overflow: hidden;" target="_blank">
 <div style="font-weight: 600; font-size: 16px;">質問・相談</div>
 <div style="font-size: 13px; margin-top: 6px; color: #57606a;">不明点や相談事項</div>
 </a>
-</div>
+</p>
 <style>
   /* ホバー効果をCSSで定義（インラインでは難しいため） */
   a[href*="github.com/Hisashi0001/harukaze/issues"]:hover {

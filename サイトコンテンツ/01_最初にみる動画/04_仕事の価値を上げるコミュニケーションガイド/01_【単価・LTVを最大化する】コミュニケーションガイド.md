@@ -8,24 +8,7 @@ duration: 17分
 
 # 【単価・LTVを最大化する】コミュニケーションガイド
 
-## 動画で理解する（17分）
-
 <div style="position: relative; padding-bottom: 56.25%; height: 0;"><iframe src="https://www.loom.com/embed/89d791c8ab7349b1bd7aeb4a9d16152e?sid=74dc4e3e-39b9-4910-b0d1-36d0ba682409" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
-
-<div style="display: flex; justify-content: space-between; margin-top: 20px; margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
-  <div style="text-align: left;">
-    <span style="color: #666;">前の章</span><br>
-    <span style="color: #999;">なし</span>
-  </div>
-  <div style="text-align: center;">
-    <strong>1 / 2</strong><br>
-    <span style="font-size: 14px; color: #666;">コミュニケーションガイド</span>
-  </div>
-  <div style="text-align: right;">
-    <span style="color: #666;">次の章</span><br>
-    <a href="./02_【対チームメンバー】コミュニケーションガイド.md" style="color: #0066cc; text-decoration: none;">対チームメンバーコミュニケーションガイド</a>
-  </div>
-</div>
 
 ## 内容
 

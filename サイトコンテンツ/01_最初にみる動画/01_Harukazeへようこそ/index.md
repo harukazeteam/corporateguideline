@@ -51,6 +51,3 @@ chapter: はじめに
 
 ---
 
-<div style="text-align: center; margin-top: 40px;">
-  <a href="01_guideline_why.html" style="display: inline-block; padding: 15px 30px; background: #333; color: white; text-decoration: none; border-radius: 5px;">最初の動画を見る →</a>
-</div>
