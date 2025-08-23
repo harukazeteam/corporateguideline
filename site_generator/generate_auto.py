@@ -133,7 +133,7 @@ class ImprovedSiteGenerator:
     def category_sort_order(self, category):
         """カテゴリのソート順序を定義"""
         order = {
-            "基本情報": 1,
+            "最初にみる動画": 1,
             "商談マニュアル": 2,
             "その他": 3,
         }
@@ -361,7 +361,7 @@ class ImprovedSiteGenerator:
 <div class="nav-divider"></div>'''
         
         # カテゴリの表示順序を定義
-        category_order = ["基本情報", "商談マニュアル", "その他"]
+        category_order = ["最初にみる動画", "商談マニュアル", "その他"]
         
         # 定義された順序でカテゴリを表示
         for category in category_order:
@@ -472,27 +472,28 @@ class ImprovedSiteGenerator:
             md = markdown.Markdown(extensions=['extra', 'codehilite', 'toc'])
             html_content = md.convert(page['content'])
             
-            # ナビゲーションボタンを追加（すべてのページに）
+            # ナビゲーションボタンのHTML作成（すべてのページに）
+            nav_html = ''
             if page['output_name'] in self.navigation_map:
                 nav = self.navigation_map[page['output_name']]
-                nav_html = '''<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 60px; margin-bottom: 30px; gap: 20px;">
+                nav_html = '''<div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 30px; gap: 20px;">
 '''
                 
                 if 'prev' in nav:
                     nav_html += f'''  <a href="{nav["prev"]["url"]}" style="
                         display: inline-flex;
                         align-items: center;
-                        padding: 12px 24px;
-                        background: linear-gradient(135deg, #667eea, #764ba2);
-                        color: white;
+                        padding: 10px 20px;
+                        background: white;
+                        color: #0066cc;
                         text-decoration: none;
-                        border-radius: 25px;
+                        border: 2px solid #0066cc;
+                        border-radius: 6px;
                         font-weight: 500;
                         font-size: 14px;
-                        transition: transform 0.2s, box-shadow 0.2s;
-                        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
-                    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.4)';" 
-                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 10px rgba(102, 126, 234, 0.3)';">
+                        transition: all 0.2s;
+                    " onmouseover="this.style.backgroundColor='#0066cc'; this.style.color='white';" 
+                       onmouseout="this.style.backgroundColor='white'; this.style.color='#0066cc';">
                         ← 前へ
                     </a>
 '''
@@ -503,18 +504,18 @@ class ImprovedSiteGenerator:
                     nav_html += f'''  <a href="{nav["next"]["url"]}" style="
                         display: inline-flex;
                         align-items: center;
-                        padding: 12px 24px;
-                        background: linear-gradient(135deg, #667eea, #764ba2);
-                        color: white;
+                        padding: 10px 20px;
+                        background: white;
+                        color: #0066cc;
                         text-decoration: none;
-                        border-radius: 25px;
+                        border: 2px solid #0066cc;
+                        border-radius: 6px;
                         font-weight: 500;
                         font-size: 14px;
-                        transition: transform 0.2s, box-shadow 0.2s;
-                        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+                        transition: all 0.2s;
                         margin-left: auto;
-                    " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 20px rgba(102, 126, 234, 0.4)';" 
-                       onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 10px rgba(102, 126, 234, 0.3)';">
+                    " onmouseover="this.style.backgroundColor='#0066cc'; this.style.color='white';" 
+                       onmouseout="this.style.backgroundColor='white'; this.style.color='#0066cc';">
                         次へ →
                     </a>
 '''
@@ -522,8 +523,28 @@ class ImprovedSiteGenerator:
                     nav_html += '  <span></span>\n'
                 
                 nav_html += '</div>\n'
-                
-                # コンテンツの最後にナビゲーションを追加
+            
+            # iframe タグの後にナビゲーションボタンを挿入
+            # BeautifulSoupを使ってHTMLを解析
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(html_content, 'html.parser')
+            
+            # iframe要素を探す（Loom動画）
+            iframe = soup.find('iframe')
+            if iframe:
+                # iframeの親要素（divタグ）を探す
+                iframe_parent = iframe.parent
+                if iframe_parent and iframe_parent.name == 'div':
+                    # ナビゲーションボタンのHTMLを解析
+                    nav_soup = BeautifulSoup(nav_html, 'html.parser')
+                    # iframe親要素の直後にナビゲーションを挿入
+                    iframe_parent.insert_after(nav_soup)
+                    html_content = str(soup)
+                else:
+                    # iframeの親がdivでない場合は、コンテンツの最後に追加
+                    html_content = html_content + nav_html
+            else:
+                # iframeがない場合は、コンテンツの最後に追加
                 html_content = html_content + nav_html
             
             # テンプレートに値を挿入
@@ -550,8 +571,8 @@ class ImprovedSiteGenerator:
 
 日々の活動において、どういう基準で判断し、どういう考え方を持ち、どういうスタンスで取り組んでいけばよいのか。これらを共有させていただくのが、このガイドラインの目的です。
 
-### 🎯 基本情報
-Harukazeの理念、ディレクターの心得、業務プロセスなど、まず押さえておくべき基本的な内容をまとめています。
+### 🎬 最初にみる動画
+Harukazeの理念、ディレクターの心得、業務プロセスなど、まず押さえておくべき基本的な内容を動画で学べます。
 
 ### 💼 商談マニュアル
 法人商談における実践的なテクニックや、信頼関係構築の方法をステップバイステップで解説しています。
