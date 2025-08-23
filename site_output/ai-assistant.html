@@ -918,30 +918,27 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        /* Loomのiframeコンテナーの高さを動的に調整 */
-        .loom-container {
+        /* Loomのiframeコンテナー - パディングハック対応 */
+        .loom-responsive-container {
             position: relative;
             width: 100%;
-            margin: 24px 0;
+            max-width: 800px;
+            margin: 24px auto;
+            padding-top: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
             background: #f5f5f5;
             border-radius: 8px;
-            overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .loom-container iframe {
+        .loom-responsive-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: auto;
+            height: 100%;
             border: none;
-            display: block;
-        }
-        
-        /* Loomの動画サイズに応じて自動調整 */
-        .content-body iframe[src*="loom.com"] {
-            width: 100%;
-            height: auto;
-            min-height: 450px;
-            aspect-ratio: 16 / 9;
         }
 
         .loom-embed {
@@ -1353,22 +1350,9 @@
                 margin: 16px 0;
             }
             
-            /* Loom動画のモバイル修正 */
+            /* Loom動画のモバイル最適化 - パディングハック維持 */
             .content-body div[style*="position: relative"][style*="padding-bottom"] {
-                position: relative !important;
-                width: 100% !important;
-                padding-bottom: 56.25% !important;
-                height: 0 !important;
-                overflow: visible !important; /* hiddenから変更 */
-            }
-            
-            .content-body div[style*="position: relative"][style*="padding-bottom"] iframe {
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-                border: none !important;
+                max-width: 100% !important;
             }
         }
 
@@ -2011,54 +1995,24 @@
             resizeVideos();
             window.addEventListener('resize', resizeVideos);
             
-            // Loom動画のアスペクト比を最適化
+            // Loom動画のレスポンシブ対応
             function optimizeLoomVideos() {
                 // Loomの埋め込みコンテナを全て取得
                 const loomContainers = document.querySelectorAll('div[style*="position: relative"][style*="padding-bottom"]');
-                const isMobile = window.innerWidth <= 768;
                 
                 loomContainers.forEach(container => {
                     const iframe = container.querySelector('iframe[src*="loom.com"]');
                     if (iframe) {
-                        if (isMobile) {
-                            // モバイルでは元のレスポンシブ設定を維持しつつ修正
-                            container.style.position = 'relative';
-                            container.style.paddingBottom = '56.25%';
-                            container.style.height = '0';
-                            container.style.overflow = 'visible'; // hiddenからvisibleに変更
-                            container.style.background = 'transparent';
-                            
-                            iframe.style.position = 'absolute';
-                            iframe.style.top = '0';
-                            iframe.style.left = '0';
-                            iframe.style.width = '100%';
-                            iframe.style.height = '100%';
-                            iframe.style.border = 'none';
-                            // iframeの内部コンテンツの位置調整
-                            iframe.style.objectFit = 'contain';
-                        } else {
-                            // デスクトップでは既存の処理
-                            container.classList.add('loom-container');
-                            
-                            // インラインスタイルを削除してCSSクラスで制御
-                            container.style.position = '';
-                            container.style.paddingBottom = '';
-                            container.style.height = '';
-                            container.style.overflow = '';
-                            container.style.background = '';
-                            
-                            // iframeのスタイルも調整
-                            iframe.style.position = '';
-                            iframe.style.top = '';
-                            iframe.style.left = '';
-                            iframe.style.width = '';
-                            iframe.style.height = '';
-                            iframe.style.objectFit = '';
-                            
-                            // Loomの実際のアスペクト比に応じて調整（多くの場合16:10や4:3）
-                            // デフォルトは16:9だが、実際の動画に応じて自動調整される
-                            container.style.aspectRatio = '16 / 9';
-                        }
+                        // コンテナにクラスを追加
+                        container.classList.add('loom-responsive-container');
+                        
+                        // インラインスタイルを維持（パディングハックのため重要）
+                        // overflow: hiddenを確実に設定
+                        container.style.overflow = 'hidden';
+                        
+                        // 最大幅を設定
+                        container.style.maxWidth = '800px';
+                        container.style.margin = '24px auto';
                     }
                 });
             }
