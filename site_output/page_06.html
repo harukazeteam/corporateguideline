@@ -1352,6 +1352,24 @@
             .loom-container {
                 margin: 16px 0;
             }
+            
+            /* Loom動画のモバイル修正 */
+            .content-body div[style*="position: relative"][style*="padding-bottom"] {
+                position: relative !important;
+                width: 100% !important;
+                padding-bottom: 56.25% !important;
+                height: 0 !important;
+                overflow: visible !important; /* hiddenから変更 */
+            }
+            
+            .content-body div[style*="position: relative"][style*="padding-bottom"] iframe {
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+                border: none !important;
+            }
         }
 
         /* プリント対応 */
@@ -1994,34 +2012,59 @@
             function optimizeLoomVideos() {
                 // Loomの埋め込みコンテナを全て取得
                 const loomContainers = document.querySelectorAll('div[style*="position: relative"][style*="padding-bottom"]');
+                const isMobile = window.innerWidth <= 768;
                 
                 loomContainers.forEach(container => {
                     const iframe = container.querySelector('iframe[src*="loom.com"]');
                     if (iframe) {
-                        // コンテナにクラスを追加してスタイリングを改善
-                        container.classList.add('loom-container');
-                        
-                        // インラインスタイルを削除してCSSクラスで制御
-                        container.style.position = '';
-                        container.style.paddingBottom = '';
-                        container.style.height = '';
-                        
-                        // iframeのスタイルも調整
-                        iframe.style.position = '';
-                        iframe.style.top = '';
-                        iframe.style.left = '';
-                        iframe.style.width = '';
-                        iframe.style.height = '';
-                        
-                        // Loomの実際のアスペクト比に応じて調整（多くの場合16:10や4:3）
-                        // デフォルトは16:9だが、実際の動画に応じて自動調整される
-                        container.style.aspectRatio = '16 / 9';
+                        if (isMobile) {
+                            // モバイルでは元のレスポンシブ設定を維持しつつ修正
+                            container.style.position = 'relative';
+                            container.style.paddingBottom = '56.25%';
+                            container.style.height = '0';
+                            container.style.overflow = 'visible'; // hiddenからvisibleに変更
+                            container.style.background = 'transparent';
+                            
+                            iframe.style.position = 'absolute';
+                            iframe.style.top = '0';
+                            iframe.style.left = '0';
+                            iframe.style.width = '100%';
+                            iframe.style.height = '100%';
+                            iframe.style.border = 'none';
+                            // iframeの内部コンテンツの位置調整
+                            iframe.style.objectFit = 'contain';
+                        } else {
+                            // デスクトップでは既存の処理
+                            container.classList.add('loom-container');
+                            
+                            // インラインスタイルを削除してCSSクラスで制御
+                            container.style.position = '';
+                            container.style.paddingBottom = '';
+                            container.style.height = '';
+                            container.style.overflow = '';
+                            container.style.background = '';
+                            
+                            // iframeのスタイルも調整
+                            iframe.style.position = '';
+                            iframe.style.top = '';
+                            iframe.style.left = '';
+                            iframe.style.width = '';
+                            iframe.style.height = '';
+                            iframe.style.objectFit = '';
+                            
+                            // Loomの実際のアスペクト比に応じて調整（多くの場合16:10や4:3）
+                            // デフォルトは16:9だが、実際の動画に応じて自動調整される
+                            container.style.aspectRatio = '16 / 9';
+                        }
                     }
                 });
             }
             
             // ページ読み込み時とDOM変更時に実行
             optimizeLoomVideos();
+            
+            // ウィンドウリサイズ時（画面回転時）にも実行
+            window.addEventListener('resize', optimizeLoomVideos);
             
             // 動的にコンテンツが追加される場合に対応
             const observer = new MutationObserver(optimizeLoomVideos);
