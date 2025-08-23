@@ -918,20 +918,40 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        /* Loom動画コンテナ - 横長設定 */
-        .content-body div[style*="position: relative"][style*="padding-bottom"] {
-            position: relative !important;
-            width: 100% !important;
-            max-width: 800px !important;
-            margin: 24px auto !important;
-            padding-bottom: 56.25% !important; /* 16:9 - 横長 */
-            height: 0 !important;
-            overflow: hidden !important;
-            background: #f5f5f5;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        /* Loom動画コンテナ - PC版は幅広、モバイルは現状維持 */
+        @media (min-width: 769px) {
+            /* PC版 - 横幅を広く */
+            .content-body div[style*="position: relative"][style*="padding-bottom"] {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 100% !important; /* 800px制限を解除 */
+                margin: 24px 0 !important; /* 中央揃えを解除 */
+                padding-bottom: 56.25% !important; /* 16:9 */
+                height: 0 !important;
+                overflow: hidden !important;
+                background: #f5f5f5;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
         }
         
+        @media (max-width: 768px) {
+            /* モバイル版 - 現状維持 */
+            .content-body div[style*="position: relative"][style*="padding-bottom"] {
+                position: relative !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 16px 0 !important;
+                padding-bottom: 56.25% !important; /* 16:9 */
+                height: 0 !important;
+                overflow: hidden !important;
+                background: #f5f5f5;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            }
+        }
+        
+        /* 共通 - iframe設定 */
         .content-body div[style*="position: relative"][style*="padding-bottom"] iframe {
             position: absolute !important;
             top: 0 !important;
@@ -1350,19 +1370,7 @@
                 margin: 16px 0;
             }
             
-            /* モバイルでも横長を維持 */
-            .content-body div[style*="position: relative"][style*="padding-bottom"] {
-                padding-bottom: 56.25% !important; /* 16:9 を強制 */
-                max-width: 100% !important;
-            }
-            
-            .content-body div[style*="position: relative"][style*="padding-bottom"] iframe {
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 100% !important;
-                height: 100% !important;
-            }
+            /* モバイル版はCSSで既に定義済み */
         }
 
         /* プリント対応 */
