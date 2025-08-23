@@ -918,36 +918,36 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        /* Loom動画コンテナ - PC版は幅広、モバイルは現状維持 */
+        /* Loom動画コンテナ - より包括的なセレクター */
+        .content-body div[style*="position: relative"] {
+            position: relative !important;
+            width: 100% !important;
+            margin: 20px 0 !important;
+            background: #f5f5f5;
+            border-radius: 8px;
+            overflow: hidden !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* パディングハックが含まれる要素の16:9強制 */
+        .content-body div[style*="padding-bottom"] {
+            padding-bottom: 56.25% !important; /* 16:9強制 */
+            height: 0 !important;
+        }
+        
         @media (min-width: 769px) {
             /* PC版 - 横幅を広く */
-            .content-body div[style*="position: relative"][style*="padding-bottom"] {
-                position: relative !important;
-                width: 100% !important;
+            .content-body div[style*="position: relative"] {
                 max-width: 100% !important; /* 800px制限を解除 */
-                margin: 24px 0 !important; /* 中央揃えを解除 */
-                padding-bottom: 56.25% !important; /* 16:9 */
-                height: 0 !important;
-                overflow: hidden !important;
-                background: #f5f5f5;
-                border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                margin: 24px 0 !important;
             }
         }
         
         @media (max-width: 768px) {
             /* モバイル版 - 現状維持 */
-            .content-body div[style*="position: relative"][style*="padding-bottom"] {
-                position: relative !important;
-                width: 100% !important;
+            .content-body div[style*="position: relative"] {
                 max-width: 100% !important;
                 margin: 16px 0 !important;
-                padding-bottom: 56.25% !important; /* 16:9 */
-                height: 0 !important;
-                overflow: hidden !important;
-                background: #f5f5f5;
-                border-radius: 8px;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             }
         }
         
