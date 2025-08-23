@@ -183,10 +183,12 @@ class ImprovedSiteGenerator:
     
     def clean_filename(self, name):
         """ファイル名をタイトル用に整形"""
-        # 数字プレフィックスを削除
-        name = re.sub(r'^\d+[_-]', '', name)
-        # アンダースコアやハイフンをスペースに
-        name = re.sub(r'[_-]', ' ', name)
+        # 01_、02_などの単純な番号プレフィックスのみ削除（1-1.などは保持）
+        name = re.sub(r'^0?\d+_', '', name)
+        # アンダースコアやハイフンをスペースに（ただし数字-数字.パターンは保持）
+        # 1-1.パターンを保護しながら、その他の_や-をスペースに変換
+        if not re.match(r'^\d+-\d+\.', name):
+            name = re.sub(r'[_-]', ' ', name)
         return name
     
     def safe_filename(self, name, original_filename=''):
